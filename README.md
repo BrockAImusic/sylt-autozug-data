@@ -1,6 +1,6 @@
-# Sylt Autozug – Fahrplandaten 🚂🔴🔵
+# Sylt Autozüge – Fahrplandaten 🚂🔴🔵
 
-Öffentliches Daten-Repo für die iOS-App **Sylt Autozug** (kombinierter Fahrplan des roten
+Öffentliches Daten-Repo für die iOS-App **Sylt Autozüge** (kombinierter Fahrplan des roten
 DB Sylt Shuttle und blauen RDC Autozug Sylt zwischen Niebüll und Westerland/Sylt).
 
 - **`timetable.json`** — die Fahrplandaten, die die App per Raw-URL lädt.
