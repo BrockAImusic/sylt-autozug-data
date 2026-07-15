@@ -1,0 +1,992 @@
+{
+  "schemaVersion": 1,
+  "dataVersion": "2026-07-15",
+  "generatedAt": "2026-07-15T06:00:00Z",
+  "note": "Alle Angaben ohne Gewähr. Zeiten = Verladeschluss (Check-in). Unabhängige App, keine offizielle App von DB oder RDC.",
+  "seasons": {
+    "summer": {
+      "label": "Sommer",
+      "ranges": [
+        {
+          "from": "2026-03-28",
+          "to": "2026-11-01"
+        }
+      ]
+    },
+    "winter": {
+      "label": "Winter",
+      "ranges": [
+        {
+          "from": "2025-12-14",
+          "to": "2026-03-27"
+        },
+        {
+          "from": "2026-11-02",
+          "to": "2026-12-12"
+        }
+      ]
+    }
+  },
+  "holidays": [
+    "2026-01-01",
+    "2026-04-03",
+    "2026-04-06",
+    "2026-05-01",
+    "2026-05-14",
+    "2026-05-25",
+    "2026-10-03",
+    "2026-10-31",
+    "2026-12-25",
+    "2026-12-26",
+    "2027-01-01"
+  ],
+  "operators": {
+    "db": {
+      "name": "DB Sylt Shuttle",
+      "shortName": "Roter Autozug",
+      "color": "#EC0016",
+      "arrivalExact": true,
+      "booking": {
+        "url": "https://ticket.syltshuttle.de",
+        "label": "Beim roten DB Sylt Shuttle buchen",
+        "affiliateParam": null,
+        "priceFrom": "19,99 €"
+      },
+      "status": {
+        "url": "https://www.syltshuttle.de/syltshuttle-de/fahrplan"
+      }
+    },
+    "rdc": {
+      "name": "RDC Autozug Sylt",
+      "shortName": "Blauer Autozug",
+      "color": "#0B63A6",
+      "arrivalExact": false,
+      "booking": {
+        "url": "https://buchung.autozug-sylt.de/shop002/",
+        "label": "Beim blauen RDC Autozug buchen",
+        "affiliateParam": null,
+        "priceFrom": "19,90 €"
+      },
+      "status": {
+        "url": "https://www.autozug-sylt.de/de/aktuelles/"
+      }
+    }
+  },
+  "flagLabels": {
+    "noMoto": "Keine Motorradbeförderung"
+  },
+  "services": [
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "weekday",
+      "close": "04:05",
+      "arr": "04:46",
+      "arrExact": true,
+      "flags": [
+        "noMoto"
+      ]
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "05:05",
+      "arr": "05:46",
+      "arrExact": true,
+      "flags": [
+        "noMoto"
+      ]
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "weekend",
+      "close": "05:35",
+      "arr": "06:16",
+      "arrExact": true,
+      "flags": [
+        "noMoto"
+      ]
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "06:35",
+      "arr": "07:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "07:35",
+      "arr": "08:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "08:05",
+      "arr": "08:46",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "09:05",
+      "arr": "09:46",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "09:35",
+      "arr": "10:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "10:35",
+      "arr": "11:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "11:35",
+      "arr": "12:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "13:05",
+      "arr": "13:46",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "14:05",
+      "arr": "14:46",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "14:35",
+      "arr": "15:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "15:35",
+      "arr": "16:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "17:05",
+      "arr": "17:46",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "18:05",
+      "arr": "18:46",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "18:35",
+      "arr": "19:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "19:35",
+      "arr": "20:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "21:05",
+      "arr": "21:46",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "weekday",
+      "close": "04:05",
+      "arr": "04:46",
+      "arrExact": true,
+      "flags": [
+        "noMoto"
+      ]
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "all",
+      "close": "05:05",
+      "arr": "05:46",
+      "arrExact": true,
+      "flags": [
+        "noMoto"
+      ]
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "weekend",
+      "close": "05:35",
+      "arr": "06:16",
+      "arrExact": true,
+      "flags": [
+        "noMoto"
+      ]
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "all",
+      "close": "06:35",
+      "arr": "07:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "all",
+      "close": "08:05",
+      "arr": "08:46",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "all",
+      "close": "09:05",
+      "arr": "09:46",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "all",
+      "close": "10:35",
+      "arr": "11:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "all",
+      "close": "11:35",
+      "arr": "12:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "all",
+      "close": "13:05",
+      "arr": "13:46",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "all",
+      "close": "14:35",
+      "arr": "15:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "all",
+      "close": "15:35",
+      "arr": "16:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "all",
+      "close": "17:05",
+      "arr": "17:46",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "all",
+      "close": "18:35",
+      "arr": "19:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "all",
+      "close": "19:35",
+      "arr": "20:16",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "days": "all",
+      "close": "21:05",
+      "arr": "21:46",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "04:55",
+      "arr": "05:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "05:25",
+      "arr": "06:15",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "06:25",
+      "arr": "07:15",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "06:55",
+      "arr": "07:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "07:55",
+      "arr": "08:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "09:25",
+      "arr": "10:15",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "10:25",
+      "arr": "11:15",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "10:55",
+      "arr": "11:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "11:55",
+      "arr": "12:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "12:55",
+      "arr": "13:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "13:25",
+      "arr": "14:15",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "14:55",
+      "arr": "15:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "15:55",
+      "arr": "16:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "16:55",
+      "arr": "17:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "weekend",
+      "close": "17:25",
+      "arr": "18:15",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "18:25",
+      "arr": "19:15",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "19:25",
+      "arr": "20:15",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "weekday",
+      "close": "19:55",
+      "arr": "20:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "20:55",
+      "arr": "21:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "days": "all",
+      "close": "05:25",
+      "arr": "06:15",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "days": "all",
+      "close": "06:25",
+      "arr": "07:15",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "days": "all",
+      "close": "06:55",
+      "arr": "07:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "days": "all",
+      "close": "07:55",
+      "arr": "08:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "days": "all",
+      "close": "09:25",
+      "arr": "10:15",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "days": "all",
+      "close": "10:25",
+      "arr": "11:15",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "days": "all",
+      "close": "11:55",
+      "arr": "12:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "days": "all",
+      "close": "13:25",
+      "arr": "14:15",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "days": "all",
+      "close": "14:55",
+      "arr": "15:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "days": "all",
+      "close": "15:55",
+      "arr": "16:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "days": "all",
+      "close": "16:55",
+      "arr": "17:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "days": "all",
+      "close": "18:25",
+      "arr": "19:15",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "days": "all",
+      "close": "19:55",
+      "arr": "20:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "days": "all",
+      "close": "20:55",
+      "arr": "21:45",
+      "arrExact": true,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "04:30",
+      "arr": "05:15",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "06:05",
+      "arr": "06:50",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "07:05",
+      "arr": "07:50",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "08:35",
+      "arr": "09:20",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "10:05",
+      "arr": "10:50",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "11:05",
+      "arr": "11:50",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "12:35",
+      "arr": "13:20",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "13:35",
+      "arr": "14:20",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "15:05",
+      "arr": "15:50",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "16:35",
+      "arr": "17:20",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "17:35",
+      "arr": "18:20",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toIsland",
+      "season": "summer",
+      "days": "all",
+      "close": "19:05",
+      "arr": "19:50",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "05:55",
+      "arr": "06:40",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "07:25",
+      "arr": "08:10",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "08:25",
+      "arr": "09:10",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "09:55",
+      "arr": "10:40",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "11:25",
+      "arr": "12:10",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "12:25",
+      "arr": "13:10",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "13:55",
+      "arr": "14:40",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "15:25",
+      "arr": "16:10",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "16:25",
+      "arr": "17:10",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "17:55",
+      "arr": "18:40",
+      "arrExact": false,
+      "flags": []
+    },
+    {
+      "op": "rdc",
+      "dir": "toMainland",
+      "season": "summer",
+      "days": "all",
+      "close": "18:55",
+      "arr": "19:40",
+      "arrExact": false,
+      "flags": []
+    }
+  ]
+}
