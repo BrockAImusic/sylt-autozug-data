@@ -59,7 +59,7 @@ OPERATORS = {
         "name": "RDC Autozug Sylt", "shortName": "Blauer Autozug", "color": "#0B63A6",
         "arrivalExact": False,
         "booking": {"url": "https://buchung.autozug-sylt.de/shop002/", "label": "Beim blauen RDC Autozug buchen", "affiliateParam": None, "priceFrom": "19,90 €"},
-        "status": {"url": "https://www.autozug-sylt.de/de/aktuelles/"},
+        "status": {"url": "https://www.autozug-sylt.de/de/fahrplan/"},
     },
 }
 FLAG_LABELS = {"noMoto": "Keine Motorradbeförderung"}
@@ -234,7 +234,7 @@ def validate(services):
     return errs
 
 
-def build_doc(services, data_version):
+def build_doc(services, data_version, data_dates):
     services = sorted(services, key=lambda s: (s["op"], s["dir"], s["season"], s["close"]))
     return {
         "schemaVersion": 1,
@@ -247,12 +247,46 @@ def build_doc(services, data_version):
         "operators": OPERATORS,
         "flagLabels": FLAG_LABELS,
         "services": services,
+        "dataDates": data_dates,
     }
 
 
 def services_signature(doc):
-    """Vergleichbarer Fingerabdruck – ignoriert dataVersion/generatedAt."""
-    return json.dumps(doc.get("services", []), sort_keys=True, ensure_ascii=False)
+    """Fingerabdruck des GESAMTEN Inhalts – nur die Zeitstempel bleiben aussen vor.
+
+    Vorher wurden nur die Fahrten verglichen. Dadurch wurde eine Korrektur an den
+    Metadaten (z. B. eine falsche Betreiber-URL) nie veröffentlicht: Die Fahrten
+    waren unverändert, also gab es keinen Commit – der Fix blieb für immer liegen.
+    """
+    ignored = {"dataVersion", "generatedAt", "dataDates"}
+    return json.dumps({k: v for k, v in doc.items() if k not in ignored},
+                      sort_keys=True, ensure_ascii=False)
+
+
+def operator_signature(doc, op):
+    """Fingerabdruck nur der Fahrten EINES Betreibers.
+
+    Damit bekommt jeder Betreiber sein eigenes Änderungsdatum: Ändert die DB
+    ihren Plan, soll beim blauen Zug nicht so aussehen, als sei er auch neu.
+    """
+    rows = [s for s in doc.get("services", []) if s.get("op") == op]
+    return json.dumps(sorted(rows, key=lambda s: (s["dir"], s["season"], s["close"])),
+                      sort_keys=True, ensure_ascii=False)
+
+
+def merge_data_dates(old_doc, new_doc, today):
+    """Datum je Betreiber nur dort hochsetzen, wo sich wirklich etwas geändert hat."""
+    old_dates = (old_doc or {}).get("dataDates") or {}
+    fallback = (old_doc or {}).get("dataVersion") or today
+    out = {}
+    for op in OPERATORS:
+        if old_doc is None:
+            out[op] = today
+        elif operator_signature(old_doc, op) != operator_signature(new_doc, op):
+            out[op] = today
+        else:
+            out[op] = old_dates.get(op, fallback)
+    return out
 
 
 def main():
@@ -274,17 +308,24 @@ def main():
         return 1
 
     today = datetime.date.today().isoformat()
-    new_doc = build_doc(services, today)
 
+    old_doc = None
     old_sig = None
     if os.path.exists(out_path):
         with open(out_path, encoding="utf-8") as f:
             old_doc = json.load(f)
         old_sig = services_signature(old_doc)
 
+    # Erst ohne Daten bauen, dann je Betreiber gegen den alten Stand vergleichen.
+    probe = build_doc(services, today, {})
+    data_dates = merge_data_dates(old_doc, probe, today)
+    new_doc = build_doc(services, today, data_dates)
+
     new_sig = services_signature(new_doc)
     changed = new_sig != old_sig
     print(f"Geparst: {len(services)} Fahrten. Änderung: {'JA' if changed else 'nein'}.")
+    for op, d in sorted(data_dates.items()):
+        print(f"  Datenstand {op}: {d}")
 
     if check_only:
         if changed:

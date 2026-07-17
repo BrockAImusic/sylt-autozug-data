@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "dataVersion": "2026-07-15",
-  "generatedAt": "2026-07-15T06:00:00Z",
+  "dataVersion": "2026-07-17",
+  "generatedAt": "2026-07-17T06:00:00Z",
   "note": "Alle Angaben ohne Gewähr. Zeiten = Verladeschluss (Check-in). Unabhängige App, keine offizielle App von DB oder RDC.",
   "seasons": {
     "summer": {
@@ -68,7 +68,7 @@
         "priceFrom": "19,90 €"
       },
       "status": {
-        "url": "https://www.autozug-sylt.de/de/aktuelles/"
+        "url": "https://www.autozug-sylt.de/de/fahrplan/"
       }
     }
   },
@@ -80,683 +80,683 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "weekday",
       "close": "04:05",
       "arr": "04:46",
-      "arrExact": true,
+      "days": "weekday",
       "flags": [
         "noMoto"
-      ]
+      ],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "05:05",
       "arr": "05:46",
-      "arrExact": true,
+      "days": "all",
       "flags": [
         "noMoto"
-      ]
+      ],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "weekend",
       "close": "05:35",
       "arr": "06:16",
-      "arrExact": true,
+      "days": "weekend",
       "flags": [
         "noMoto"
-      ]
+      ],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "06:35",
       "arr": "07:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "07:35",
       "arr": "08:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "08:05",
       "arr": "08:46",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "09:05",
       "arr": "09:46",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "09:35",
       "arr": "10:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "10:35",
       "arr": "11:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "11:35",
       "arr": "12:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "13:05",
       "arr": "13:46",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "14:05",
       "arr": "14:46",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "14:35",
       "arr": "15:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "15:35",
       "arr": "16:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "17:05",
       "arr": "17:46",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "18:05",
       "arr": "18:46",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "18:35",
       "arr": "19:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "19:35",
       "arr": "20:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
       "close": "21:05",
       "arr": "21:46",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "weekday",
       "close": "04:05",
       "arr": "04:46",
-      "arrExact": true,
+      "days": "weekday",
       "flags": [
         "noMoto"
-      ]
+      ],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "all",
       "close": "05:05",
       "arr": "05:46",
-      "arrExact": true,
+      "days": "all",
       "flags": [
         "noMoto"
-      ]
+      ],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "weekend",
       "close": "05:35",
       "arr": "06:16",
-      "arrExact": true,
+      "days": "weekend",
       "flags": [
         "noMoto"
-      ]
+      ],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "all",
       "close": "06:35",
       "arr": "07:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "all",
       "close": "08:05",
       "arr": "08:46",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "all",
       "close": "09:05",
       "arr": "09:46",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "all",
       "close": "10:35",
       "arr": "11:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "all",
       "close": "11:35",
       "arr": "12:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "all",
       "close": "13:05",
       "arr": "13:46",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "all",
       "close": "14:35",
       "arr": "15:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "all",
       "close": "15:35",
       "arr": "16:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "all",
       "close": "17:05",
       "arr": "17:46",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "all",
       "close": "18:35",
       "arr": "19:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "all",
       "close": "19:35",
       "arr": "20:16",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
-      "days": "all",
       "close": "21:05",
       "arr": "21:46",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "04:55",
       "arr": "05:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "05:25",
       "arr": "06:15",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "06:25",
       "arr": "07:15",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "06:55",
       "arr": "07:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "07:55",
       "arr": "08:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "09:25",
       "arr": "10:15",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "10:25",
       "arr": "11:15",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "10:55",
       "arr": "11:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "11:55",
       "arr": "12:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "12:55",
       "arr": "13:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "13:25",
       "arr": "14:15",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "14:55",
       "arr": "15:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "15:55",
       "arr": "16:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "16:55",
       "arr": "17:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "weekend",
       "close": "17:25",
       "arr": "18:15",
-      "arrExact": true,
-      "flags": []
+      "days": "weekend",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "18:25",
       "arr": "19:15",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "19:25",
       "arr": "20:15",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "weekday",
       "close": "19:55",
       "arr": "20:45",
-      "arrExact": true,
-      "flags": []
+      "days": "weekday",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "days": "all",
       "close": "20:55",
       "arr": "21:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
-      "days": "all",
       "close": "05:25",
       "arr": "06:15",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
-      "days": "all",
       "close": "06:25",
       "arr": "07:15",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
-      "days": "all",
       "close": "06:55",
       "arr": "07:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
-      "days": "all",
       "close": "07:55",
       "arr": "08:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
-      "days": "all",
       "close": "09:25",
       "arr": "10:15",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
-      "days": "all",
       "close": "10:25",
       "arr": "11:15",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
-      "days": "all",
       "close": "11:55",
       "arr": "12:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
-      "days": "all",
       "close": "13:25",
       "arr": "14:15",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
-      "days": "all",
       "close": "14:55",
       "arr": "15:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
-      "days": "all",
       "close": "15:55",
       "arr": "16:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
-      "days": "all",
       "close": "16:55",
       "arr": "17:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
-      "days": "all",
       "close": "18:25",
       "arr": "19:15",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
-      "days": "all",
       "close": "19:55",
       "arr": "20:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
-      "days": "all",
       "close": "20:55",
       "arr": "21:45",
-      "arrExact": true,
-      "flags": []
+      "days": "all",
+      "flags": [],
+      "arrExact": true
     },
     {
       "op": "rdc",
@@ -988,5 +988,9 @@
       "arrExact": false,
       "flags": []
     }
-  ]
+  ],
+  "dataDates": {
+    "db": "2026-07-15",
+    "rdc": "2026-07-15"
+  }
 }
