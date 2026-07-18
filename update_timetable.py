@@ -45,6 +45,12 @@ SEASONS = {
         {"from": "2026-11-02", "to": "2026-12-12"},
     ]},
 }
+# RDC faehrt seinen Sommerfahrplan eine Woche frueher und eine Woche laenger
+# als die DB (laut PDF: "GUELTIG: 21. Maerz bis 8. November 2026"). Ohne diese
+# Unterscheidung faenden Nutzer an 14 Tagen faelschlich keinen blauen Zug.
+OPERATOR_SEASONS = {
+    "rdc": {"summer": {"ranges": [{"from": "2026-03-21", "to": "2026-11-08"}]}},
+}
 HOLIDAYS = ["2026-01-01", "2026-04-03", "2026-04-06", "2026-05-01", "2026-05-14",
             "2026-05-25", "2026-10-03", "2026-10-31", "2026-12-25", "2026-12-26",
             "2027-01-01"]
@@ -66,6 +72,18 @@ FLAG_LABELS = {"noMoto": "Keine Motorradbeförderung"}
 RDC_TRAVEL_MINUTES = 45
 
 TIME_RE = re.compile(r"([0-2]?\d:[0-5]\d)")
+
+
+def fetch_bytes(url):
+    """Wie fetch(), liefert aber die Rohdaten (fuer PDF-Downloads)."""
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return r.read()
+    except Exception:
+        import subprocess
+        return subprocess.run(["curl", "-sL", "-A", UA, "--max-time", "30", url],
+                              capture_output=True, check=True).stdout
 
 
 def fetch(url):
@@ -193,15 +211,103 @@ def parse_rdc(page_html):
     return to_island, to_mainland
 
 
+def rdc_pdf_url(page_html):
+    """Findet den Link zum offiziellen Fahrplan-PDF auf der RDC-Seite."""
+    m = re.search(r'href="([^"]*Fahrplaene[^"]*\.pdf)"', page_html, re.I)
+    if not m:
+        raise RuntimeError("RDC: kein Fahrplan-PDF verlinkt")
+    href = m.group(1)
+    return href if href.startswith("http") else "https://www.autozug-sylt.de" + href
+
+
+def rdc_pdf_text(url):
+    """Laedt das PDF und macht daraus Text (braucht pdftotext aus poppler)."""
+    import subprocess, tempfile, os
+    data = fetch_bytes(url)
+    with tempfile.TemporaryDirectory() as tmp:
+        pdf = os.path.join(tmp, "plan.pdf")
+        txt = os.path.join(tmp, "plan.txt")
+        with open(pdf, "wb") as f:
+            f.write(data)
+        subprocess.run(["pdftotext", "-layout", pdf, txt], check=True,
+                       capture_output=True)
+        with open(txt, encoding="utf-8", errors="ignore") as f:
+            return f.read()
+
+
+# "4:30   5:20 Mo.-Fr. | *1"  bzw.  "6:05   6:50 taeglich"
+RDC_ROW = re.compile(
+    r"(\d{1,2}:\d{2})\s+(\d{1,2}:\d{2})\s+(täglich|Mo\.-Fr\.|Sa\.|So\.)\s*(?:\|\s*\*(\d))?")
+
+# Fussnote: "*3 1. Mai und 3. & 31. Oktober 2026."  -> Ausnahmedaten
+MONATE = {"Januar":1,"Februar":2,"März":3,"April":4,"Mai":5,"Juni":6,"Juli":7,
+          "August":8,"September":9,"Oktober":10,"November":11,"Dezember":12}
+
+
+def rdc_fussnoten(text):
+    """Ordnet jeder Fussnote die Kalendertage zu, an denen der Zug NICHT faehrt.
+
+    Die Hinweise stehen im PDF in einer eigenen Spalte rechts, und der Verweis
+    ("*3") sitzt mitten im Satz. Deshalb wird erst die rechte Spalte
+    herausgeschnitten und dann an "Zug verkehrt nicht" in Bloecke zerlegt.
+    """
+    zeilen = text.split("\n")
+    spalte = None
+    for z in zeilen:
+        i = z.find("WICHTIGE HINWEISE")
+        if i >= 0:
+            spalte = max(0, i - 12)
+            break
+    if spalte is None:
+        return {}
+    rechts = " ".join(z[spalte:].strip() for z in zeilen if len(z) > spalte)
+
+    noten = {}
+    for block in re.split(r"Zug verkehrt nicht", rechts):
+        m = re.search(r"\*(\d)", block)
+        if not m:
+            continue
+        nr = m.group(1)
+        klar = block.replace("*" + nr, " ")
+        jahr = re.search(r"\b(20\d\d)\b", klar)
+        tage = []
+        if jahr:
+            for tm in re.finditer(r"((?:\d{1,2}\.\s*(?:&|und|,)?\s*)+)([A-ZÄÖÜ][a-zäöü]+)", klar):
+                monat = MONATE.get(tm.group(2))
+                if not monat:
+                    continue
+                for t in re.findall(r"(\d{1,2})\.", tm.group(1)):
+                    tage.append(f"{jahr.group(1)}-{monat:02d}-{int(t):02d}")
+        noten[nr] = sorted(set(tage))
+    return noten
+
+
 def rdc_services(page_html):
-    to_island, to_mainland = parse_rdc(page_html)
-    season = "winter" if re.search(r"Winterfahrplan", page_html, re.I) else "summer"
+    """Liest den blauen Fahrplan aus dem PDF – vollstaendig und tagesunabhaengig.
+
+    Die HTML-Seite zeigt nur die Abfahrten des gerade gewaehlten Datums und
+    verschweigt die Wochentagsregeln; sie taugt daher nicht als Quelle.
+    """
+    text = rdc_pdf_text(rdc_pdf_url(page_html))
+    noten = rdc_fussnoten(text)
+
+    zeilen = [z for z in text.split("\n") if RDC_ROW.search(z)]
     services = []
-    for direction, closes in (("toIsland", to_island), ("toMainland", to_mainland)):
-        for c in closes:
-            services.append({"op": "rdc", "dir": direction, "season": season,
-                             "days": "all", "close": c, "arr": add_minutes(c, RDC_TRAVEL_MINUTES),
-                             "arrExact": False, "flags": []})
+    for z in zeilen:
+        treffer = list(RDC_ROW.finditer(z))
+        # linke Spalte = Niebuell->Westerland, rechte = Westerland->Niebuell
+        for i, m in enumerate(treffer):
+            direction = "toIsland" if m.start() < len(z) // 2 else "toMainland"
+            close, arr, tage, note = m.group(1), m.group(2), m.group(3), m.group(4)
+            days = {"täglich": "all", "Mo.-Fr.": "weekday"}.get(tage)
+            if days is None:
+                continue
+            eintrag = {"op": "rdc", "dir": direction, "season": "summer",
+                       "days": days, "close": norm(close), "arr": norm(arr),
+                       "arrExact": False, "flags": []}
+            if note and noten.get(note):
+                eintrag["exceptDates"] = noten[note]
+            services.append(eintrag)
     return services
 
 
@@ -243,6 +349,7 @@ def build_doc(services, data_version, data_dates):
         "note": "Alle Angaben ohne Gewähr. Zeiten = Verladeschluss (Check-in). "
                 "Unabhängige App, keine offizielle App von DB oder RDC.",
         "seasons": SEASONS,
+        "operatorSeasons": OPERATOR_SEASONS,
         "holidays": HOLIDAYS,
         "operators": OPERATORS,
         "flagLabels": FLAG_LABELS,

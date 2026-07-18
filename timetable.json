@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "dataVersion": "2026-07-17",
-  "generatedAt": "2026-07-17T06:00:00Z",
+  "dataVersion": "2026-07-18",
+  "generatedAt": "2026-07-18T06:00:00Z",
   "note": "Alle Angaben ohne Gewähr. Zeiten = Verladeschluss (Check-in). Unabhängige App, keine offizielle App von DB oder RDC.",
   "seasons": {
     "summer": {
@@ -25,6 +25,18 @@
           "to": "2026-12-12"
         }
       ]
+    }
+  },
+  "operatorSeasons": {
+    "rdc": {
+      "summer": {
+        "ranges": [
+          {
+            "from": "2026-03-21",
+            "to": "2026-11-08"
+          }
+        ]
+      }
     }
   },
   "holidays": [
@@ -762,9 +774,9 @@
       "op": "rdc",
       "dir": "toIsland",
       "season": "summer",
-      "days": "all",
+      "days": "weekday",
       "close": "04:30",
-      "arr": "05:15",
+      "arr": "05:20",
       "arrExact": false,
       "flags": []
     },
@@ -776,7 +788,11 @@
       "close": "06:05",
       "arr": "06:50",
       "arrExact": false,
-      "flags": []
+      "flags": [],
+      "exceptDates": [
+        "2026-04-05",
+        "2026-05-25"
+      ]
     },
     {
       "op": "rdc",
@@ -884,9 +900,16 @@
       "season": "summer",
       "days": "all",
       "close": "05:55",
-      "arr": "06:40",
+      "arr": "06:45",
       "arrExact": false,
-      "flags": []
+      "flags": [],
+      "exceptDates": [
+        "2026-04-03",
+        "2026-04-05",
+        "2026-05-01",
+        "2026-10-03",
+        "2026-10-31"
+      ]
     },
     {
       "op": "rdc",
@@ -894,7 +917,7 @@
       "season": "summer",
       "days": "all",
       "close": "07:25",
-      "arr": "08:10",
+      "arr": "08:15",
       "arrExact": false,
       "flags": []
     },
@@ -904,7 +927,7 @@
       "season": "summer",
       "days": "all",
       "close": "08:25",
-      "arr": "09:10",
+      "arr": "09:15",
       "arrExact": false,
       "flags": []
     },
@@ -914,7 +937,7 @@
       "season": "summer",
       "days": "all",
       "close": "09:55",
-      "arr": "10:40",
+      "arr": "10:45",
       "arrExact": false,
       "flags": []
     },
@@ -924,7 +947,7 @@
       "season": "summer",
       "days": "all",
       "close": "11:25",
-      "arr": "12:10",
+      "arr": "12:15",
       "arrExact": false,
       "flags": []
     },
@@ -934,7 +957,7 @@
       "season": "summer",
       "days": "all",
       "close": "12:25",
-      "arr": "13:10",
+      "arr": "13:15",
       "arrExact": false,
       "flags": []
     },
@@ -944,7 +967,7 @@
       "season": "summer",
       "days": "all",
       "close": "13:55",
-      "arr": "14:40",
+      "arr": "14:45",
       "arrExact": false,
       "flags": []
     },
@@ -954,7 +977,7 @@
       "season": "summer",
       "days": "all",
       "close": "15:25",
-      "arr": "16:10",
+      "arr": "16:15",
       "arrExact": false,
       "flags": []
     },
@@ -964,7 +987,7 @@
       "season": "summer",
       "days": "all",
       "close": "16:25",
-      "arr": "17:10",
+      "arr": "17:15",
       "arrExact": false,
       "flags": []
     },
@@ -974,7 +997,7 @@
       "season": "summer",
       "days": "all",
       "close": "17:55",
-      "arr": "18:40",
+      "arr": "18:45",
       "arrExact": false,
       "flags": []
     },
@@ -984,13 +1007,13 @@
       "season": "summer",
       "days": "all",
       "close": "18:55",
-      "arr": "19:40",
+      "arr": "19:45",
       "arrExact": false,
       "flags": []
     }
   ],
   "dataDates": {
     "db": "2026-07-15",
-    "rdc": "2026-07-15"
+    "rdc": "2026-07-18"
   }
 }

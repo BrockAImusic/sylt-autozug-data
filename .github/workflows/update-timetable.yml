@@ -26,6 +26,12 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Der blaue Fahrplan wird aus dem offiziellen PDF gelesen – die HTML-Seite
+      # zeigt nur die Abfahrten des gewählten Tages und verschweigt die
+      # Wochentagsregeln. pdftotext steckt in poppler-utils.
+      - name: pdftotext bereitstellen
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+
       - name: Fahrpläne abrufen, prüfen & schreiben
         run: python3 update_timetable.py
 
