@@ -1,0 +1,39 @@
+name: Verspätungen beobachten
+
+# Läuft mehrmals täglich und hängt die aktuelle Echtzeit-Lage der Autozüge an
+# delay_log.csv an. Zweck: über ein paar Tage prüfen, ob die Verspätungsdaten für
+# rot UND blau verlässlich kommen, bevor das Feature in die App wandert.
+
+on:
+  schedule:
+    # Alle 3 Stunden von 03:00 bis 18:00 UTC = 05–20 Uhr Berliner Zeit (Sommer).
+    - cron: "0 3,6,9,12,15,18 * * *"
+  workflow_dispatch:        # zusätzlich manuell auslösbar
+
+permissions:
+  contents: write
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verspätungen abfragen und anhängen
+        run: python3 observe_delays.py
+
+      - name: Log committen
+        run: |
+          if ! git diff --quiet -- delay_log.csv; then
+            git config user.name "sylt-autozug-bot"
+            git config user.email "bot@users.noreply.github.com"
+            git add delay_log.csv
+            git commit -m "Verspätungs-Log: $(date -u '+%Y-%m-%d %H:%M UTC')"
+            git push
+          else
+            echo "Keine Änderung."
+          fi
