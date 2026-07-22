@@ -16,7 +16,8 @@ import os
 import datetime
 import urllib.request
 
-UA = "Mozilla/5.0 (compatible; SyltAutozugObserver/1.0)"
+UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+      "(KHTML, like Gecko) Chrome/120.0 Safari/537.36")
 API = "https://www.bahn.de/web/api/angebote/fahrplan"
 NIEBUELL = "A=1@O=Niebüll Autoverladung@X=8835785@Y=54784561@U=80@L=8085311@"
 WESTERLAND = "A=1@O=Westerland (Sylt) Autoverladung@X=8313638@Y=54904737@U=80@L=8030918@"
@@ -35,9 +36,11 @@ def query(ab_halt, an_halt, when):
         "schnelleVerbindungen": False, "sitzplatzOnly": False,
         "bikeCarriage": False, "reservierungsKontingenteVorhanden": False,
     }
-    req = urllib.request.Request(API, data=json.dumps(body).encode(),
-                                 headers={"User-Agent": UA, "Content-Type": "application/json",
-                                          "Accept-Encoding": "gzip"})
+    req = urllib.request.Request(API, data=json.dumps(body).encode(), headers={
+        "User-Agent": UA, "Content-Type": "application/json", "Accept-Encoding": "gzip",
+        "Accept": "application/json", "Accept-Language": "de-DE,de;q=0.9",
+        "Origin": "https://www.bahn.de",
+        "Referer": "https://www.bahn.de/buchung/fahrplan/suche"})
     with urllib.request.urlopen(req, timeout=30) as r:
         raw = r.read()
         if r.headers.get("Content-Encoding") == "gzip":
