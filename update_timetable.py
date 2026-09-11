@@ -58,13 +58,17 @@ OPERATORS = {
     "db": {
         "name": "DB Sylt Shuttle", "shortName": "Roter Autozug", "color": "#EC0016",
         "arrivalExact": True,
-        "booking": {"url": "https://ticket.syltshuttle.de", "label": "Beim roten DB Sylt Shuttle buchen", "affiliateParam": None, "priceFrom": "19,99 €"},
+        "booking": {"url": "https://ticket.syltshuttle.de", "label": "Beim roten DB Sylt Shuttle buchen", "affiliateParam": None, "affiliateUrl": None, "priceFrom": "19,99 €"},
         "status": {"url": "https://www.syltshuttle.de/syltshuttle-de/fahrplan"},
     },
     "rdc": {
         "name": "RDC Autozug Sylt", "shortName": "Blauer Autozug", "color": "#0B63A6",
         "arrivalExact": False,
-        "booking": {"url": "https://buchung.autozug-sylt.de/shop002/", "label": "Beim blauen RDC Autozug buchen", "affiliateParam": None, "priceFrom": "19,90 €"},
+        "booking": {"url": "https://buchung.autozug-sylt.de/shop002/", "label": "Beim blauen RDC Autozug buchen", "affiliateParam": None,
+                    # Partnerlink aus dem Kooperationsvertrag mit RDC (Sept. 2026). Eigenes Feld,
+                    # damit ältere App-Versionen ohne Werbe-Hinweis beim normalen Link bleiben.
+                    "affiliateUrl": "https://buchung.autozug-sylt.de/shop002/reflink?id=8000000094",
+                    "priceFrom": "19,90 €"},
         "status": {"url": "https://www.autozug-sylt.de/de/fahrplan/"},
     },
 }
