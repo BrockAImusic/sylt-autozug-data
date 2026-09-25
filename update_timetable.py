@@ -45,12 +45,11 @@ SEASONS = {
         {"from": "2026-11-02", "to": "2026-12-12"},
     ]},
 }
-# RDC faehrt seinen Sommerfahrplan eine Woche frueher und eine Woche laenger
-# als die DB (laut PDF: "GUELTIG: 21. Maerz bis 8. November 2026"). Ohne diese
-# Unterscheidung faenden Nutzer an 14 Tagen faelschlich keinen blauen Zug.
-OPERATOR_SEASONS = {
-    "rdc": {"summer": {"ranges": [{"from": "2026-03-21", "to": "2026-11-08"}]}},
-}
+# RDC-Saisons werden NICHT mehr fest verdrahtet, sondern aus der Zeile
+# "GÜLTIG: 21. März bis 8. November 2026" jedes Fahrplan-PDFs gelesen (siehe
+# rdc_services). RDC faehrt anders als die DB (Sommer eine Woche laenger), und
+# sobald RDC den Winterfahrplan veroeffentlicht, landet er so automatisch als
+# "winter" in den Daten – vorher wuerde er faelschlich als Sommer eingelesen.
 HOLIDAYS = ["2026-01-01", "2026-04-03", "2026-04-06", "2026-05-01", "2026-05-14",
             "2026-05-25", "2026-10-03", "2026-10-31", "2026-12-25", "2026-12-26",
             "2027-01-01"]
@@ -70,6 +69,14 @@ OPERATORS = {
                     "affiliateUrl": "https://buchung.autozug-sylt.de/shop002/reflink?id=8000000094",
                     "priceFrom": "19,90 €"},
         "status": {"url": "https://www.autozug-sylt.de/de/fahrplan/"},
+        # Zeigt die App nur an Tagen OHNE blaue Zeiten (RDC hat den Fahrplan noch
+        # nicht veroeffentlicht) und nur im Zeitraum. Quelle: FAQ autozug-sylt.de,
+        # abgerufen 25.09.2026. Keine Einzelzeiten erfinden – nur Belegtes.
+        "noTimetableNote": {
+            "text": "Laut RDC gilt ab dem 9. November 2026 der Winterfahrplan; die Abendverbindungen entfallen dann teilweise. Letzte Abfahrt (Verladeschluss): ab Niebüll 17:35 Uhr, ab Westerland 17:55 Uhr.",
+            "from": "2026-11-09",
+            "to": "2027-03-19",
+        },
     },
 }
 FLAG_LABELS = {"noMoto": "Keine Motorradbeförderung"}
@@ -215,13 +222,51 @@ def parse_rdc(page_html):
     return to_island, to_mainland
 
 
-def rdc_pdf_url(page_html):
-    """Findet den Link zum offiziellen Fahrplan-PDF auf der RDC-Seite."""
-    m = re.search(r'href="([^"]*Fahrplaene[^"]*\.pdf)"', page_html, re.I)
-    if not m:
+def rdc_pdf_urls(page_html):
+    """Alle Fahrplan-PDFs der RDC-Seite – im Herbst stehen Sommer UND Winter dort."""
+    hrefs = []
+    for m in re.finditer(r'href="([^"]*Fahrplaene[^"]*\.pdf)"', page_html, re.I):
+        href = m.group(1)
+        url = href if href.startswith("http") else "https://www.autozug-sylt.de" + href
+        if url not in hrefs:
+            hrefs.append(url)
+    if not hrefs:
         raise RuntimeError("RDC: kein Fahrplan-PDF verlinkt")
-    href = m.group(1)
-    return href if href.startswith("http") else "https://www.autozug-sylt.de" + href
+    return hrefs
+
+
+# "GÜLTIG: 21. März bis 8. November 2026" bzw. "9. November 2026 bis 20. März 2027"
+RDC_GUELTIG = re.compile(
+    r"G(?:Ü|UE|ü)LTIG:?\s*(\d{1,2})\.\s*([A-Za-zÄÖÜäöü]+)\s*(\d{4})?\s*(?:bis|–|-)\s*"
+    r"(\d{1,2})\.\s*([A-Za-zÄÖÜäöü]+)\s*(\d{4})", re.I)
+
+
+def rdc_gueltigkeit(text):
+    """Liest Zeitraum und Saison aus dem PDF. Ohne Gueltigkeitszeile: Fehler –
+    lieber keine neuen Daten als geratene Saisons."""
+    m = RDC_GUELTIG.search(text)
+    if not m:
+        raise RuntimeError("RDC: keine GÜLTIG-Zeile im Fahrplan-PDF")
+    t1, m1, j1, t2, m2, j2 = m.groups()
+    mon1, mon2 = MONATE.get(m1.capitalize()), MONATE.get(m2.capitalize())
+    if not mon1 or not mon2:
+        raise RuntimeError(f"RDC: Monat nicht erkannt in {m.group(0)!r}")
+    j2 = int(j2)
+    # Fehlt das erste Jahr, liegt es im selben Jahr – ausser der Zeitraum
+    # reicht ueber den Jahreswechsel (Winter).
+    j1 = int(j1) if j1 else (j2 - 1 if mon1 > mon2 else j2)
+    von = datetime.date(j1, mon1, int(t1))
+    bis = datetime.date(j2, mon2, int(t2))
+    if bis <= von:
+        raise RuntimeError(f"RDC: Zeitraum unplausibel: {von} bis {bis}")
+    # Winter = der Zeitraum enthaelt einen Dezember- oder Januartag.
+    tag, winter = von, False
+    while tag <= bis:
+        if tag.month in (12, 1):
+            winter = True
+            break
+        tag += datetime.timedelta(days=1)
+    return ("winter" if winter else "summer"), von.isoformat(), bis.isoformat()
 
 
 def rdc_pdf_text(url):
@@ -287,12 +332,24 @@ def rdc_fussnoten(text):
 
 
 def rdc_services(page_html):
-    """Liest den blauen Fahrplan aus dem PDF – vollstaendig und tagesunabhaengig.
+    """Liest den blauen Fahrplan aus ALLEN verlinkten PDFs – vollstaendig und
+    tagesunabhaengig. Liefert (Fahrten, Saison-Zeitraeume fuer operatorSeasons).
 
     Die HTML-Seite zeigt nur die Abfahrten des gerade gewaehlten Datums und
     verschweigt die Wochentagsregeln; sie taugt daher nicht als Quelle.
     """
-    text = rdc_pdf_text(rdc_pdf_url(page_html))
+    services, seasons = [], {}
+    for url in rdc_pdf_urls(page_html):
+        text = rdc_pdf_text(url)
+        season, von, bis = rdc_gueltigkeit(text)
+        if season in seasons:
+            raise RuntimeError(f"RDC: zwei PDFs für dieselbe Saison ({season})")
+        seasons[season] = {"ranges": [{"from": von, "to": bis}]}
+        services += rdc_services_aus_text(text, season)
+    return services, seasons
+
+
+def rdc_services_aus_text(text, season):
     noten = rdc_fussnoten(text)
 
     zeilen = [z for z in text.split("\n") if RDC_ROW.search(z)]
@@ -306,7 +363,7 @@ def rdc_services(page_html):
             days = {"täglich": "all", "Mo.-Fr.": "weekday"}.get(tage)
             if days is None:
                 continue
-            eintrag = {"op": "rdc", "dir": direction, "season": "summer",
+            eintrag = {"op": "rdc", "dir": direction, "season": season,
                        "days": days, "close": norm(close), "arr": norm(arr),
                        "arrExact": False, "flags": []}
             if note and noten.get(note):
@@ -344,7 +401,7 @@ def validate(services):
     return errs
 
 
-def build_doc(services, data_version, data_dates):
+def build_doc(services, data_version, data_dates, operator_seasons):
     services = sorted(services, key=lambda s: (s["op"], s["dir"], s["season"], s["close"]))
     return {
         "schemaVersion": 1,
@@ -353,7 +410,7 @@ def build_doc(services, data_version, data_dates):
         "note": "Alle Angaben ohne Gewähr. Zeiten = Verladeschluss (Check-in). "
                 "Unabhängige App, keine offizielle App von DB oder RDC.",
         "seasons": SEASONS,
-        "operatorSeasons": OPERATOR_SEASONS,
+        "operatorSeasons": operator_seasons,
         "holidays": HOLIDAYS,
         "operators": OPERATORS,
         "flagLabels": FLAG_LABELS,
@@ -385,6 +442,23 @@ def operator_signature(doc, op):
                       sort_keys=True, ensure_ascii=False)
 
 
+def rdc_laufende_behalten(old_doc, services, seasons, today):
+    """Nimmt RDC einen noch gueltigen Fahrplan von der Seite (z. B. das Sommer-PDF,
+    sobald der Winter erscheint, aber vor dem 8. November), bleiben dessen Fahrten
+    bis zum Ende seines Zeitraums erhalten – sonst stuende der blaue Zug fuer die
+    Restwochen ohne Zeiten da."""
+    alt = ((old_doc or {}).get("operatorSeasons") or {}).get("rdc") or {}
+    for season, dto in alt.items():
+        if season in seasons:
+            continue
+        ende = max((r["to"] for r in dto.get("ranges", [])), default="")
+        if ende >= today:
+            seasons[season] = dto
+            services += [s for s in old_doc.get("services", [])
+                         if s.get("op") == "rdc" and s.get("season") == season]
+    return services, seasons
+
+
 def merge_data_dates(old_doc, new_doc, today):
     """Datum je Betreiber nur dort hochsetzen, wo sich wirklich etwas geändert hat."""
     old_dates = (old_doc or {}).get("dataDates") or {}
@@ -406,7 +480,8 @@ def main():
     out_path = os.path.join(here, "timetable.json")
 
     try:
-        services = db_services(fetch(DB_INDEX)) + rdc_services(fetch(RDC_URL))
+        rdc, rdc_seasons = rdc_services(fetch(RDC_URL))
+        services = db_services(fetch(DB_INDEX)) + rdc
     except Exception as e:  # Netzwerk/Parsing – Fail-Safe
         print(f"FEHLER beim Abruf/Parsen: {e}", file=sys.stderr)
         return 1
@@ -427,10 +502,15 @@ def main():
             old_doc = json.load(f)
         old_sig = services_signature(old_doc)
 
+    services, rdc_seasons = rdc_laufende_behalten(old_doc, services, rdc_seasons, today)
+    operator_seasons = {"rdc": rdc_seasons}
+
     # Erst ohne Daten bauen, dann je Betreiber gegen den alten Stand vergleichen.
-    probe = build_doc(services, today, {})
+    probe = build_doc(services, today, {}, operator_seasons)
     data_dates = merge_data_dates(old_doc, probe, today)
-    new_doc = build_doc(services, today, data_dates)
+    new_doc = build_doc(services, today, data_dates, operator_seasons)
+    for season, dto in sorted(rdc_seasons.items()):
+        print(f"  RDC {season}: {dto['ranges'][0]['from']} bis {dto['ranges'][-1]['to']}")
 
     new_sig = services_signature(new_doc)
     changed = new_sig != old_sig
