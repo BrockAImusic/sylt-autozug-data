@@ -73,7 +73,7 @@ OPERATORS = {
         # nicht veroeffentlicht) und nur im Zeitraum. Quelle: FAQ autozug-sylt.de,
         # abgerufen 25.09.2026. Keine Einzelzeiten erfinden – nur Belegtes.
         "noTimetableNote": {
-            "text": "Laut RDC gilt ab dem 9. November 2026 der Winterfahrplan; die Abendverbindungen entfallen dann teilweise. Letzte Abfahrt (Verladeschluss): ab Niebüll 17:35 Uhr, ab Westerland 17:55 Uhr.",
+            "text": "Ab dem 9. November 2026 gilt der Winterfahrplan. Letzte Abfahrt (Verladeschluss): ab Niebüll 17:35 Uhr, ab Westerland 17:55 Uhr.",
             "from": "2026-11-09",
             "to": "2027-03-19",
         },
