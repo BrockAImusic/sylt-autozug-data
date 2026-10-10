@@ -269,9 +269,11 @@ def rdc_gueltigkeit(text):
     return ("winter" if winter else "summer"), von.isoformat(), bis.isoformat()
 
 
-def rdc_pdf_text(url):
-    """Laedt das PDF und macht daraus Text (braucht pdftotext aus poppler)."""
-    import subprocess, tempfile, os
+def rdc_pdf_lesen(url):
+    """Laedt das PDF und liest daraus einen Teilplan (braucht pdftotext/pdftoppm
+    aus poppler). Liefert {season, von, bis, text, fahrten}; jede Fahrt traegt
+    die Menge der Kalendertage, an denen sie laut PDF faehrt."""
+    import tempfile
     data = fetch_bytes(url)
     with tempfile.TemporaryDirectory() as tmp:
         pdf = os.path.join(tmp, "plan.pdf")
@@ -281,16 +283,42 @@ def rdc_pdf_text(url):
         subprocess.run(["pdftotext", "-layout", pdf, txt], check=True,
                        capture_output=True)
         with open(txt, encoding="utf-8", errors="ignore") as f:
-            return f.read()
+            text = f.read()
+        season, von, bis = rdc_gueltigkeit(text)
+        plan = {"url": url, "season": season, "von": von, "bis": bis, "text": text}
+        if RDC_RASTER_KOPF.search(text):
+            plan["fahrten"] = rdc_raster_fahrten(pdf, tmp, von, bis)
+        else:
+            plan["fahrten"] = rdc_text_fahrten(text, von, bis)
+    return plan
 
 
 # "4:30   5:20 Mo.-Fr. | *1"  bzw.  "6:05   6:50 taeglich"
 RDC_ROW = re.compile(
-    r"(\d{1,2}:\d{2})\s+(\d{1,2}:\d{2})\s+(täglich|Mo\.-Fr\.|Sa\.|So\.)\s*(?:\|\s*\*(\d))?")
+    r"(\d{1,2}:\d{2})\s+(\d{1,2}:\d{2})\s+(täglich|Mo\.-Fr\.|Fr\.|Sa\.|So\.)\s*(?:\|\s*\*(\d))?")
+# Jedes Zeitpaar im Text – damit faellt eine Zeile mit unbekannter Tagesregel auf,
+# statt still zu verschwinden.
+RDC_ZEITPAAR = re.compile(r"(\d{1,2}:\d{2})\s+(\d{1,2}:\d{2})")
+# Kopfzeile eines Ankreuz-Fahrplans (Weihnachten): "24.12   25.12   26.12 ..."
+RDC_RASTER_KOPF = re.compile(r"(?:\b\d{2}\.\d{2}\b\s+){4,}\d{2}\.\d{2}\b")
 
 # Fussnote: "*3 1. Mai und 3. & 31. Oktober 2026."  -> Ausnahmedaten
 MONATE = {"Januar":1,"Februar":2,"März":3,"April":4,"Mai":5,"Juni":6,"Juli":7,
           "August":8,"September":9,"Oktober":10,"November":11,"Dezember":12}
+
+
+def rdc_datumsliste(klar):
+    """ "1. & 2. April sowie 13., 21. & 22. Mai 2026" -> ISO-Tage. Ohne Jahr: leer."""
+    jahr = re.search(r"\b(20\d\d)\b", klar)
+    tage = []
+    if jahr:
+        for tm in re.finditer(r"((?:\d{1,2}\.\s*(?:&|und|,)?\s*)+)([A-ZÄÖÜ][a-zäöü]+)", klar):
+            monat = MONATE.get(tm.group(2))
+            if not monat:
+                continue
+            for t in re.findall(r"(\d{1,2})\.", tm.group(1)):
+                tage.append(f"{jahr.group(1)}-{monat:02d}-{int(t):02d}")
+    return sorted(set(tage))
 
 
 def rdc_fussnoten(text):
@@ -317,17 +345,7 @@ def rdc_fussnoten(text):
         if not m:
             continue
         nr = m.group(1)
-        klar = block.replace("*" + nr, " ")
-        jahr = re.search(r"\b(20\d\d)\b", klar)
-        tage = []
-        if jahr:
-            for tm in re.finditer(r"((?:\d{1,2}\.\s*(?:&|und|,)?\s*)+)([A-ZÄÖÜ][a-zäöü]+)", klar):
-                monat = MONATE.get(tm.group(2))
-                if not monat:
-                    continue
-                for t in re.findall(r"(\d{1,2})\.", tm.group(1)):
-                    tage.append(f"{jahr.group(1)}-{monat:02d}-{int(t):02d}")
-        noten[nr] = sorted(set(tage))
+        noten[nr] = rdc_datumsliste(block.replace("*" + nr, " "))
     return noten
 
 
@@ -337,39 +355,287 @@ def rdc_services(page_html):
 
     Die HTML-Seite zeigt nur die Abfahrten des gerade gewaehlten Datums und
     verschweigt die Wochentagsregeln; sie taugt daher nicht als Quelle.
+
+    RDC teilt den Winter in mehrere PDFs (Herbst 2026: Uebergang 9.11.–12.12.,
+    Winter 13.12.–19.3., Weihnachten 24.12.–3.1.). Die Apps kennen aber nur
+    "summer"/"winter" – und lehnen Unbekanntes ab. Deshalb werden alle Teilplaene
+    einer Saison zu EINER Saison zusammengefuehrt; welche Fahrt an welchem Tag
+    faehrt, steckt in days + exceptDates (versteht auch jede aeltere App-Version).
     """
-    services, seasons = [], {}
+    nach_saison = {}
     for url in rdc_pdf_urls(page_html):
-        text = rdc_pdf_text(url)
-        season, von, bis = rdc_gueltigkeit(text)
-        if season in seasons:
-            raise RuntimeError(f"RDC: zwei PDFs für dieselbe Saison ({season})")
-        seasons[season] = {"ranges": [{"from": von, "to": bis}]}
-        services += rdc_services_aus_text(text, season)
+        plan = rdc_pdf_lesen(url)
+        if not plan["fahrten"]:
+            raise RuntimeError(f"RDC: keine Fahrten gelesen aus {url}")
+        nach_saison.setdefault(plan["season"], []).append(plan)
+
+    services, seasons = [], {}
+    for season, plaene in nach_saison.items():
+        s, ranges = rdc_saison_zusammenfuehren(season, plaene)
+        services += s
+        seasons[season] = {"ranges": ranges}
     return services, seasons
 
 
-def rdc_services_aus_text(text, season):
-    noten = rdc_fussnoten(text)
+def _tage(von, bis):
+    """Alle Kalendertage von..bis (ISO-Strings, inklusive) als ISO-Strings."""
+    a, b = datetime.date.fromisoformat(von), datetime.date.fromisoformat(bis)
+    return [(a + datetime.timedelta(days=i)).isoformat() for i in range((b - a).days + 1)]
 
-    zeilen = [z for z in text.split("\n") if RDC_ROW.search(z)]
-    services = []
-    for z in zeilen:
+
+def app_tagestyp(tag):
+    """Exakt die Regel der Apps (TimetableEngine.dayType): Feiertag = Wochenende."""
+    if tag in HOLIDAYS:
+        return "weekend"
+    return "weekend" if datetime.date.fromisoformat(tag).weekday() >= 5 else "weekday"
+
+
+def _faehrt_nach_regel(tag, regel):
+    """Wochentagsregel aus dem PDF. "Mo.-Fr." und "Fr." fahren wie bisher nicht
+    an Feiertagen (= Tagestyp "weekday" der Apps)."""
+    wt = datetime.date.fromisoformat(tag).weekday()
+    if regel == "täglich":
+        return True
+    if regel == "Mo.-Fr.":
+        return app_tagestyp(tag) == "weekday"
+    if regel == "Fr.":
+        return wt == 4 and app_tagestyp(tag) == "weekday"
+    if regel == "Sa.":
+        return wt == 5
+    if regel == "So.":
+        return wt == 6
+    raise RuntimeError(f"RDC: unbekannte Tagesregel {regel!r}")
+
+
+def rdc_text_fahrten(text, von, bis):
+    """Teilplan mit Spalte WOCHENTAGE (Sommer, Uebergang, Winter)."""
+    noten = rdc_fussnoten(text)
+    tage = _tage(von, bis)
+    fahrten = []
+    zeilen = text.split("\n")
+    for zi, z in enumerate(zeilen):
         treffer = list(RDC_ROW.finditer(z))
-        # linke Spalte = Niebuell->Westerland, rechte = Westerland->Niebuell
-        for i, m in enumerate(treffer):
+        paare = list(RDC_ZEITPAAR.finditer(z))
+        if len(paare) == 1 and not treffer:
+            # Sonderfahrt nur an genannten Tagen, z. B. Sommer 2026:
+            #   "                1. & 2. April sowie"
+            #   "20:05   20:50   13., 21. & 22. Mai 2026"
+            # Die Liste kann in der Zeile darueber beginnen.
+            m = paare[0]
+            liste = z[m.end():].strip()
+            davor = zeilen[zi - 1].strip() if zi else ""
+            if davor and not RDC_ZEITPAAR.search(davor) and not TIME_RE.search(davor):
+                liste = davor + " " + liste
+            tage_liste = rdc_datumsliste(liste)
+            if not tage_liste:
+                raise RuntimeError(f"RDC: Zeile mit unbekannter Tagesregel: {z.strip()!r}")
             direction = "toIsland" if m.start() < len(z) // 2 else "toMainland"
-            close, arr, tage, note = m.group(1), m.group(2), m.group(3), m.group(4)
-            days = {"täglich": "all", "Mo.-Fr.": "weekday"}.get(tage)
-            if days is None:
+            fahrten.append({"dir": direction, "close": norm(m.group(1)), "arr": norm(m.group(2)),
+                            "flags": [], "tage": set(tage_liste) & set(tage)})
+            continue
+        if len(paare) != len(treffer):
+            raise RuntimeError(f"RDC: Zeile mit unbekannter Tagesregel: {z.strip()!r}")
+        # linke Spalte = Niebuell->Westerland, rechte = Westerland->Niebuell
+        for m in treffer:
+            direction = "toIsland" if m.start() < len(z) // 2 else "toMainland"
+            close, arr, regel, note = m.group(1), m.group(2), m.group(3), m.group(4)
+            if note and note not in noten:
+                raise RuntimeError(f"RDC: Fussnote *{note} nicht gefunden: {z.strip()!r}")
+            aus = set(noten.get(note, [])) if note else set()
+            fahrten.append({"dir": direction, "close": norm(close), "arr": norm(arr),
+                            "flags": [],
+                            "tage": {t for t in tage if _faehrt_nach_regel(t, regel) and t not in aus}})
+    return fahrten
+
+
+def _pgm_lesen(pfad):
+    """Minimaler Leser fuer binaere Graustufen-PGM (P5) aus pdftoppm -gray."""
+    with open(pfad, "rb") as f:
+        roh = f.read()
+    felder, pos = [], 0
+    while len(felder) < 4:
+        while roh[pos:pos + 1].isspace():
+            pos += 1
+        if roh[pos:pos + 1] == b"#":
+            pos = roh.index(b"\n", pos) + 1
+            continue
+        start = pos
+        while not roh[pos:pos + 1].isspace():
+            pos += 1
+        felder.append(roh[start:pos])
+    if felder[0] != b"P5" or int(felder[3]) != 255:
+        raise RuntimeError("RDC: unerwartetes Rasterformat")
+    breite, hoehe = int(felder[1]), int(felder[2])
+    return breite, hoehe, roh[pos + 1:pos + 1 + breite * hoehe]
+
+
+RASTER_DPI = 144          # 2 Pixel je PDF-Punkt
+HAKEN_FENSTER = 3.5       # halbe Kantenlaenge des Pruef-Quadrats in Punkt
+HAKEN_LEER_MAX = 0.03     # Anteil dunkler Pixel: leer bis hier ...
+HAKEN_VOLL_MIN = 0.12     # ... Haken ab hier; dazwischen = unsicher -> Abbruch
+
+
+def rdc_raster_fahrten(pdf, tmp, von, bis):
+    """Teilplan als Ankreuz-Tabelle (Weihnachten): Zeilen = Zuege, Spalten = Tage,
+    ein Haken = Zug faehrt. Die Haken sind Grafik, kein Text. Darum: Positionen
+    der Tage und Zeiten aus pdftotext -bbox, dann im gerasterten Bild je Zelle
+    dunkle Pixel zaehlen. Jede Zelle muss eindeutig leer oder angekreuzt sein,
+    sonst Abbruch – lieber keine Daten als geratene."""
+    bbox = os.path.join(tmp, "bbox.html")
+    subprocess.run(["pdftotext", "-bbox", pdf, bbox], check=True, capture_output=True)
+    with open(bbox, encoding="utf-8", errors="ignore") as f:
+        woerter = [(float(a), float(b), float(c), float(d), htmllib.unescape(w))
+                   for a, b, c, d, w in re.findall(
+                       r'xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">([^<]*)</word>', f.read())]
+    subprocess.run(["pdftoppm", "-r", str(RASTER_DPI), "-gray", "-singlefile", pdf,
+                    os.path.join(tmp, "raster")], check=True, capture_output=True)
+    breite, hoehe, pixel = _pgm_lesen(os.path.join(tmp, "raster.pgm"))
+    px = RASTER_DPI / 72.0
+
+    def dunkel_anteil(xc, yc):
+        x0, x1 = int((xc - HAKEN_FENSTER) * px), int((xc + HAKEN_FENSTER) * px)
+        y0, y1 = int((yc - HAKEN_FENSTER) * px), int((yc + HAKEN_FENSTER) * px)
+        n = d = 0
+        for y in range(max(0, y0), min(hoehe, y1)):
+            zeile = pixel[y * breite:(y + 1) * breite]
+            for x in range(max(0, x0), min(breite, x1)):
+                n += 1
+                d += zeile[x] < 110
+        return d / n if n else 0.0
+
+    # Tagesspalten je Block: Woerter "dd.mm", nach Zeilenhoehe gruppiert.
+    kopf = {}
+    for x0, y0, x1, y1, w in woerter:
+        if re.fullmatch(r"\d{2}\.\d{2}", w):
+            kopf.setdefault(round(y0 / 5), []).append(((x0 + x1) / 2, w, y0, y1))
+    bloecke = sorted(kopf.values(), key=lambda k: k[0][2])
+    if len(bloecke) != 2:
+        raise RuntimeError(f"RDC-Ankreuzplan: {len(bloecke)} statt 2 Tabellen gefunden")
+
+    alle_tage = _tage(von, bis)
+    def iso(ddmm):
+        treffer = [t for t in alle_tage if t[8:10] + "." + t[5:7] == ddmm]
+        if len(treffer) != 1:
+            raise RuntimeError(f"RDC-Ankreuzplan: Tag {ddmm} liegt nicht im Zeitraum {von}–{bis}")
+        return treffer[0]
+
+    fahrten = []
+    for bi, spalten in enumerate(bloecke):
+        spalten.sort()
+        tage = [iso(w) for _, w, _, _ in spalten]
+        if tage != alle_tage:
+            raise RuntimeError(f"RDC-Ankreuzplan: Spalten {tage} decken {von}–{bis} nicht lueckenlos ab")
+        kopf_oben, kopf_unten = min(s[2] for s in spalten), max(s[3] for s in spalten)
+        ende = min(s[2] for s in bloecke[1]) if bi == 0 else 1e9
+        # Richtung aus der Ueberschrift direkt ueber der Tabelle.
+        ueber = [w for w in woerter if kopf_oben - 30 < w[1] < kopf_oben]
+        ni = [w[0] for w in ueber if w[4].upper().startswith("NIEB")]
+        we = [w[0] for w in ueber if w[4].upper().startswith("WESTERLAND")]
+        if len(ni) != 1 or len(we) != 1:
+            raise RuntimeError("RDC-Ankreuzplan: Richtung nicht erkennbar")
+        direction = "toIsland" if ni[0] < we[0] else "toMainland"
+        # Zeilen: Zeitwoerter zwischen Kopf und naechster Tabelle, nach Hoehe gruppiert.
+        zeiten = sorted(((y0 + y1) / 2, x0, w) for x0, y0, x1, y1, w in woerter
+                        if kopf_unten < y0 < ende and TIME_RE.fullmatch(w))
+        zeilen = []
+        for yc, x0, w in zeiten:
+            if zeilen and yc - zeilen[-1][0][2] < 3:   # gleiche Tabellenzeile
+                zeilen[-1].append((x0, w, yc))
+            else:
+                zeilen.append([(x0, w, yc)])
+        if len(zeilen) < 8:
+            raise RuntimeError(f"RDC-Ankreuzplan: nur {len(zeilen)} Zeilen in Tabelle {bi + 1}")
+        for zeit in zeilen:
+            if len(zeit) != 2:
+                raise RuntimeError(f"RDC-Ankreuzplan: Zeile ohne Zeitpaar: {zeit}")
+            zeit.sort()
+            yc = zeit[0][2]
+            faehrt = set()
+            for (xc, _, _, _), tag in zip(spalten, tage):
+                a = dunkel_anteil(xc, yc)
+                if os.environ.get("RDC_RASTER_DEBUG"):
+                    print(f"  raster {direction} {zeit[0][1]} {tag}: {a:.3f}", file=sys.stderr)
+                if HAKEN_LEER_MAX < a < HAKEN_VOLL_MIN:
+                    raise RuntimeError(f"RDC-Ankreuzplan: Zelle {zeit[0][1]} / {tag} unklar ({a:.2f})")
+                if a >= HAKEN_VOLL_MIN:
+                    faehrt.add(tag)
+            fahrten.append({"dir": direction, "close": norm(zeit[0][1]), "arr": norm(zeit[1][1]),
+                            "flags": [], "tage": faehrt})
+    return fahrten
+
+
+def _monatstext(iso_tag):
+    d = datetime.date.fromisoformat(iso_tag)
+    name = [k for k, v in MONATE.items() if v == d.month][0]
+    return rf"{d.day}\.\s*{name}"
+
+
+def rdc_saison_zusammenfuehren(season, plaene):
+    """Fuehrt die Teilplaene einer Saison zu einer Fahrtenliste zusammen.
+
+    Vorrang: Liegt ein Teilplan ganz INNERHALB eines anderen und kuendigt der
+    aeussere ihn selbst an ("Vom 24. Dezember ... bis 3. Januar gilt ein
+    gesonderter ..."), gilt an diesen Tagen nur der innere. Jede andere
+    Ueberlappung ist ohne Vorrangregel -> Abbruch, statt zu raten."""
+    vorrang = {i: set() for i in range(len(plaene))}   # i wird von diesen Plaenen ueberstimmt
+    for i, a in enumerate(plaene):
+        for j, b in enumerate(plaene):
+            if j <= i or a["bis"] < b["von"] or b["bis"] < a["von"]:
                 continue
-            eintrag = {"op": "rdc", "dir": direction, "season": season,
-                       "days": days, "close": norm(close), "arr": norm(arr),
-                       "arrExact": False, "flags": []}
-            if note and noten.get(note):
-                eintrag["exceptDates"] = noten[note]
-            services.append(eintrag)
-    return services
+            for innen, aussen, ii, aa in ((a, b, i, j), (b, a, j, i)):
+                if aussen["von"] <= innen["von"] and innen["bis"] <= aussen["bis"] \
+                        and (innen["von"], innen["bis"]) != (aussen["von"], aussen["bis"]):
+                    hinweis = _monatstext(innen["von"]) + r"\s*(?:\d{4})?\s*bis\s*" + _monatstext(innen["bis"])
+                    if re.search(hinweis, " ".join(aussen["text"].split())):
+                        vorrang[aa].add(ii)
+                        break
+            else:
+                raise RuntimeError(
+                    f"RDC: Teilplaene {a['von']}–{a['bis']} und {b['von']}–{b['bis']} "
+                    f"ueberlappen ohne Vorrangregel")
+
+    fahrten = {}
+    alle = set()
+    for i, p in enumerate(plaene):
+        gilt = set(_tage(p["von"], p["bis"]))
+        for j in vorrang[i]:
+            gilt -= set(_tage(plaene[j]["von"], plaene[j]["bis"]))
+        alle |= set(_tage(p["von"], p["bis"]))
+        for f in p["fahrten"]:
+            key = (f["dir"], f["close"], f["arr"], tuple(f["flags"]))
+            fahrten.setdefault(key, set()).update(f["tage"] & gilt)
+
+    # Zusammenhaengende Zeitraeume fuer operatorSeasons.
+    tage = sorted(alle)
+    ranges = [{"from": tage[0], "to": tage[0]}]
+    for t in tage[1:]:
+        if datetime.date.fromisoformat(t) - datetime.date.fromisoformat(ranges[-1]["to"]) == datetime.timedelta(days=1):
+            ranges[-1]["to"] = t
+        else:
+            ranges.append({"from": t, "to": t})
+
+    services = []
+    for (direction, close, arr, flags), faehrt in fahrten.items():
+        if not faehrt:
+            continue
+        # Kuerzeste Darstellung: Tagestyp der Apps + die Tage, an denen sie trotzdem
+        # nicht faehrt. Jede Fahrt wird danach gegen die App-Logik nachgerechnet.
+        beste = None
+        for days in ("all", "weekday", "weekend"):
+            basis = {t for t in tage if days == "all" or app_tagestyp(t) == days}
+            if faehrt <= basis and (beste is None or len(basis - faehrt) < len(beste[1])):
+                beste = (days, sorted(basis - faehrt))
+        days, aus = beste
+        eintrag = {"op": "rdc", "dir": direction, "season": season, "days": days,
+                   "close": close, "arr": arr, "arrExact": False, "flags": list(flags)}
+        if aus:
+            eintrag["exceptDates"] = aus
+        nachgerechnet = {t for t in tage
+                         if (days == "all" or app_tagestyp(t) == days) and t not in aus}
+        if nachgerechnet != faehrt:
+            raise RuntimeError(f"RDC: Darstellung von {direction} {close} stimmt nicht")
+        services.append(eintrag)
+    return services, ranges
 
 
 # --------------------------------------------------------- Validierung -----
