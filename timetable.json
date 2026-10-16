@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "dataVersion": "2026-10-10",
-  "generatedAt": "2026-10-10T06:00:00Z",
+  "dataVersion": "2026-10-16",
+  "generatedAt": "2026-10-16T06:00:00Z",
   "note": "Alle Angaben ohne Gewähr. Zeiten = Verladeschluss (Check-in). Unabhängige App, keine offizielle App von DB oder RDC.",
   "seasons": {
     "summer": {
@@ -93,7 +93,7 @@
         "url": "https://www.autozug-sylt.de/de/fahrplan/"
       },
       "noTimetableNote": {
-        "text": "Ab dem 9. November 2026 gilt der Winterfahrplan. Letzte Abfahrt (Verladeschluss): ab Niebüll 17:35 Uhr, ab Westerland 17:55 Uhr.",
+        "text": "Ab dem 9. November 2026 gilt der Winterfahrplan. Letzte regelmäßige Abfahrt (Verladeschluss) bis 12. Dezember: ab Niebüll 17:35 Uhr (freitags 19:05 Uhr), ab Westerland 17:55 Uhr; ab 13. Dezember 17:50 Uhr (freitags 19:20 Uhr) bzw. 18:10 Uhr.",
         "from": "2026-11-09",
         "to": "2027-03-19"
       }
