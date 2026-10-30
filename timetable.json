@@ -71,7 +71,8 @@
         "label": "Beim roten DB Sylt Shuttle buchen",
         "affiliateParam": null,
         "affiliateUrl": null,
-        "priceFrom": "19,99 €"
+        "priceFrom": "19,99 €",
+        "prefillUrl": "https://ticket.syltshuttle.de/?originId={bahnhofDB}&oneway=true&dateTo={datumISO}&vehicleId={dbFahrzeug}"
       },
       "status": {
         "url": "https://www.syltshuttle.de/syltshuttle-de/fahrplan"
@@ -87,7 +88,8 @@
         "label": "Beim blauen RDC Autozug buchen",
         "affiliateParam": null,
         "affiliateUrl": "https://buchung.autozug-sylt.de/shop002/reflink?id=8000000094",
-        "priceFrom": "19,90 €"
+        "priceFrom": "19,90 €",
+        "prefillUrl": "https://buchung.autozug-sylt.de/reflink?id=8000000094&start={start}&date={datum}&size={rdcTarif}"
       },
       "status": {
         "url": "https://www.autozug-sylt.de/de/fahrplan/"

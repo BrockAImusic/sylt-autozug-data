@@ -57,7 +57,10 @@ OPERATORS = {
     "db": {
         "name": "DB Sylt Shuttle", "shortName": "Roter Autozug", "color": "#EC0016",
         "arrivalExact": True,
-        "booking": {"url": "https://ticket.syltshuttle.de", "label": "Beim roten DB Sylt Shuttle buchen", "affiliateParam": None, "affiliateUrl": None, "priceFrom": "19,99 €"},
+        "booking": {"url": "https://ticket.syltshuttle.de", "label": "Beim roten DB Sylt Shuttle buchen", "affiliateParam": None, "affiliateUrl": None, "priceFrom": "19,99 €",
+                    # Vorausgefüllte Buchungsseite (App ab 1.12, nur wenn der Nutzer es einschaltet).
+                    # Platzhalter füllt die App; None schaltet die Vorbelegung für alle ab (Not-Aus).
+                    "prefillUrl": "https://ticket.syltshuttle.de/?originId={bahnhofDB}&oneway=true&dateTo={datumISO}&vehicleId={dbFahrzeug}"},
         "status": {"url": "https://www.syltshuttle.de/syltshuttle-de/fahrplan"},
     },
     "rdc": {
@@ -67,7 +70,9 @@ OPERATORS = {
                     # Partnerlink aus dem Kooperationsvertrag mit RDC (Sept. 2026). Eigenes Feld,
                     # damit ältere App-Versionen ohne Werbe-Hinweis beim normalen Link bleiben.
                     "affiliateUrl": "https://buchung.autozug-sylt.de/shop002/reflink?id=8000000094",
-                    "priceFrom": "19,90 €"},
+                    "priceFrom": "19,90 €",
+                    # Vorausgefüllter Partnerlink (App ab 1.12): Kennung bleibt erhalten. None = Not-Aus.
+                    "prefillUrl": "https://buchung.autozug-sylt.de/reflink?id=8000000094&start={start}&date={datum}&size={rdcTarif}"},
         "status": {"url": "https://www.autozug-sylt.de/de/fahrplan/"},
         # Zeigt die App nur an Tagen OHNE blaue Zeiten (RDC hat den Fahrplan noch
         # nicht veroeffentlicht) und nur im Zeitraum. Quelle: FAQ autozug-sylt.de,
