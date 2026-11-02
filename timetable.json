@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "dataVersion": "2026-10-16",
-  "generatedAt": "2026-10-16T06:00:00Z",
+  "dataVersion": "2026-11-02",
+  "generatedAt": "2026-11-02T06:00:00Z",
   "note": "Alle Angaben ohne Gewähr. Zeiten = Verladeschluss (Check-in). Unabhängige App, keine offizielle App von DB oder RDC.",
   "seasons": {
     "summer": {
@@ -121,8 +121,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "05:05",
-      "arr": "05:46",
+      "close": "05:20",
+      "arr": "06:03",
       "days": "all",
       "flags": [
         "noMoto"
@@ -133,8 +133,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "05:35",
-      "arr": "06:16",
+      "close": "05:50",
+      "arr": "06:32",
       "days": "weekend",
       "flags": [
         "noMoto"
@@ -145,8 +145,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "06:35",
-      "arr": "07:16",
+      "close": "06:50",
+      "arr": "07:32",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -155,8 +155,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "07:35",
-      "arr": "08:16",
+      "close": "07:50",
+      "arr": "08:32",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -165,8 +165,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "08:05",
-      "arr": "08:46",
+      "close": "08:20",
+      "arr": "09:03",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -175,8 +175,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "09:05",
-      "arr": "09:46",
+      "close": "09:20",
+      "arr": "10:03",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -185,8 +185,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "09:35",
-      "arr": "10:16",
+      "close": "09:50",
+      "arr": "10:32",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -195,8 +195,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "10:35",
-      "arr": "11:16",
+      "close": "10:50",
+      "arr": "11:32",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -205,8 +205,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "11:35",
-      "arr": "12:16",
+      "close": "12:20",
+      "arr": "13:03",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -215,8 +215,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "13:05",
-      "arr": "13:46",
+      "close": "13:20",
+      "arr": "14:03",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -225,8 +225,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "14:05",
-      "arr": "14:46",
+      "close": "13:50",
+      "arr": "14:32",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -235,8 +235,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "14:35",
-      "arr": "15:16",
+      "close": "14:50",
+      "arr": "15:32",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -245,8 +245,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "15:35",
-      "arr": "16:16",
+      "close": "15:50",
+      "arr": "16:32",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -255,8 +255,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "17:05",
-      "arr": "17:46",
+      "close": "17:20",
+      "arr": "18:03",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -265,8 +265,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "18:05",
-      "arr": "18:46",
+      "close": "18:20",
+      "arr": "19:03",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -275,8 +275,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "18:35",
-      "arr": "19:16",
+      "close": "19:50",
+      "arr": "20:32",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -285,8 +285,8 @@
       "op": "db",
       "dir": "toIsland",
       "season": "summer",
-      "close": "19:35",
-      "arr": "20:16",
+      "close": "20:50",
+      "arr": "21:32",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -294,11 +294,13 @@
     {
       "op": "db",
       "dir": "toIsland",
-      "season": "summer",
-      "close": "21:05",
-      "arr": "21:46",
-      "days": "all",
-      "flags": [],
+      "season": "winter",
+      "close": "04:05",
+      "arr": "04:46",
+      "days": "weekday",
+      "flags": [
+        "noMoto"
+      ],
       "arrExact": true
     },
     {
@@ -329,6 +331,18 @@
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
+      "close": "05:20",
+      "arr": "06:03",
+      "days": "all",
+      "flags": [
+        "noMoto"
+      ],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
       "close": "05:35",
       "arr": "06:16",
       "days": "weekend",
@@ -341,8 +355,40 @@
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
+      "close": "05:50",
+      "arr": "06:32",
+      "days": "weekend",
+      "flags": [
+        "noMoto"
+      ],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
       "close": "06:35",
       "arr": "07:16",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "close": "06:50",
+      "arr": "07:32",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "close": "07:50",
+      "arr": "08:32",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -371,8 +417,28 @@
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
+      "close": "09:20",
+      "arr": "10:03",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
       "close": "10:35",
       "arr": "11:16",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "close": "10:50",
+      "arr": "11:32",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -391,8 +457,28 @@
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
+      "close": "12:20",
+      "arr": "13:03",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
       "close": "13:05",
       "arr": "13:46",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "close": "13:50",
+      "arr": "14:32",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -411,8 +497,28 @@
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
+      "close": "14:50",
+      "arr": "15:32",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
       "close": "15:35",
       "arr": "16:16",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "close": "15:50",
+      "arr": "16:32",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -431,8 +537,38 @@
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
+      "close": "17:20",
+      "arr": "18:03",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
       "close": "18:35",
       "arr": "19:16",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "close": "18:35",
+      "arr": "19:16",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
+      "close": "18:50",
+      "arr": "19:32",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -451,6 +587,16 @@
       "op": "db",
       "dir": "toIsland",
       "season": "winter",
+      "close": "20:20",
+      "arr": "21:03",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toIsland",
+      "season": "winter",
       "close": "21:05",
       "arr": "21:46",
       "days": "all",
@@ -461,8 +607,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "04:55",
-      "arr": "05:45",
+      "close": "05:10",
+      "arr": "06:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -471,8 +617,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "05:25",
-      "arr": "06:15",
+      "close": "05:40",
+      "arr": "06:30",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -481,8 +627,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "06:25",
-      "arr": "07:15",
+      "close": "06:40",
+      "arr": "07:30",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -491,8 +637,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "06:55",
-      "arr": "07:45",
+      "close": "07:10",
+      "arr": "08:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -501,8 +647,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "07:55",
-      "arr": "08:45",
+      "close": "08:10",
+      "arr": "09:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -511,8 +657,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "09:25",
-      "arr": "10:15",
+      "close": "09:10",
+      "arr": "10:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -521,8 +667,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "10:25",
-      "arr": "11:15",
+      "close": "10:40",
+      "arr": "11:30",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -531,8 +677,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "10:55",
-      "arr": "11:45",
+      "close": "11:10",
+      "arr": "12:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -541,8 +687,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "11:55",
-      "arr": "12:45",
+      "close": "12:10",
+      "arr": "13:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -551,8 +697,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "12:55",
-      "arr": "13:45",
+      "close": "12:40",
+      "arr": "13:30",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -561,8 +707,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "13:25",
-      "arr": "14:15",
+      "close": "13:40",
+      "arr": "14:30",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -571,8 +717,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "14:55",
-      "arr": "15:45",
+      "close": "15:10",
+      "arr": "16:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -581,8 +727,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "15:55",
-      "arr": "16:45",
+      "close": "16:10",
+      "arr": "17:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -591,8 +737,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "16:55",
-      "arr": "17:45",
+      "close": "17:10",
+      "arr": "18:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -601,18 +747,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "17:25",
-      "arr": "18:15",
-      "days": "weekend",
-      "flags": [],
-      "arrExact": true
-    },
-    {
-      "op": "db",
-      "dir": "toMainland",
-      "season": "summer",
-      "close": "18:25",
-      "arr": "19:15",
+      "close": "18:40",
+      "arr": "19:30",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -621,8 +757,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "19:25",
-      "arr": "20:15",
+      "close": "19:40",
+      "arr": "20:30",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -631,8 +767,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "19:55",
-      "arr": "20:45",
+      "close": "20:10",
+      "arr": "21:00",
       "days": "weekday",
       "flags": [],
       "arrExact": true
@@ -641,8 +777,8 @@
       "op": "db",
       "dir": "toMainland",
       "season": "summer",
-      "close": "20:55",
-      "arr": "21:45",
+      "close": "21:10",
+      "arr": "22:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -661,8 +797,28 @@
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
+      "close": "05:40",
+      "arr": "06:30",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
       "close": "06:25",
       "arr": "07:15",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "close": "06:40",
+      "arr": "07:30",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -681,8 +837,38 @@
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
+      "close": "07:10",
+      "arr": "08:00",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
       "close": "07:55",
       "arr": "08:45",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "close": "08:10",
+      "arr": "09:00",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "close": "09:10",
+      "arr": "10:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -711,8 +897,28 @@
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
+      "close": "10:40",
+      "arr": "11:30",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
       "close": "11:55",
       "arr": "12:45",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "close": "12:10",
+      "arr": "13:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -731,8 +937,28 @@
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
+      "close": "13:40",
+      "arr": "14:30",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
       "close": "14:55",
       "arr": "15:45",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "close": "15:10",
+      "arr": "16:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -751,8 +977,28 @@
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
+      "close": "16:10",
+      "arr": "17:00",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
       "close": "16:55",
       "arr": "17:45",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "close": "17:10",
+      "arr": "18:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -771,8 +1017,28 @@
       "op": "db",
       "dir": "toMainland",
       "season": "winter",
+      "close": "18:40",
+      "arr": "19:30",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
       "close": "19:55",
       "arr": "20:45",
+      "days": "all",
+      "flags": [],
+      "arrExact": true
+    },
+    {
+      "op": "db",
+      "dir": "toMainland",
+      "season": "winter",
+      "close": "20:10",
+      "arr": "21:00",
       "days": "all",
       "flags": [],
       "arrExact": true
@@ -4679,7 +4945,7 @@
     }
   ],
   "dataDates": {
-    "db": "2026-07-15",
+    "db": "2026-11-02",
     "rdc": "2026-10-10"
   }
 }
