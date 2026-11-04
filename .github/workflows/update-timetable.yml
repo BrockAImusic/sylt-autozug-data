@@ -10,6 +10,11 @@ on:
   schedule:
     - cron: "17 4 * * 1"   # jeden Montag 04:17 UTC
   workflow_dispatch:        # manuell auslösbar
+    inputs:
+      freigeben:
+        description: "Auffällige Änderung nach Prüfung trotzdem veröffentlichen"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -32,8 +37,12 @@ jobs:
       - name: pdftotext bereitstellen
         run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
 
+      # Exit 1 = Fehler, Exit 2 = auffällige Änderung zurückgehalten (Job wird rot,
+      # der bisherige Fahrplan bleibt online). Beides meldet der Push-Schritt unten.
       - name: Fahrpläne abrufen, prüfen & schreiben
-        run: python3 update_timetable.py
+        env:
+          MELDUNG_DATEI: ${{ runner.temp }}/meldung.json
+        run: python3 update_timetable.py ${{ inputs.freigeben && '--freigeben' || '' }}
 
       - name: Änderungen committen
         run: |
@@ -47,3 +56,31 @@ jobs:
           else
             echo "Keine Änderung – nichts zu committen."
           fi
+
+      # Push aufs iPhone (ntfy), sobald es etwas zu melden gibt: veröffentlicht,
+      # zurückgehalten oder fehlgeschlagen. Ohne Meldungsdatei (keine Änderung) still.
+      - name: Push-Meldung
+        if: always()
+        env:
+          NTFY_THEMA: ${{ secrets.NTFY_THEMA }}
+          MELDUNG_DATEI: ${{ runner.temp }}/meldung.json
+          LAUF_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, urllib.request
+          pfad, thema = os.environ["MELDUNG_DATEI"], os.environ.get("NTFY_THEMA")
+          if not os.path.exists(pfad):
+              if "${{ job.status }}" != "success":
+                  m = {"titel": "Sylt-Fahrplan: Lauf fehlgeschlagen", "text": "Ohne Meldung abgebrochen – Protokoll ansehen.", "wichtig": True}
+              else:
+                  raise SystemExit(0)
+          else:
+              m = json.load(open(pfad, encoding="utf-8"))
+          if not thema:
+              raise SystemExit("NTFY_THEMA fehlt – keine Push-Meldung")
+          n = {"topic": thema, "title": "Fahrplan · " + m["titel"], "message": m["text"],
+               "tags": ["train"], "priority": 4 if m["wichtig"] else 3, "click": os.environ["LAUF_URL"]}
+          r = urllib.request.Request("https://ntfy.sh/", data=json.dumps(n).encode(),
+                                     headers={"Content-Type": "application/json"}, method="POST")
+          print(urllib.request.urlopen(r, timeout=20).status)
+          EOF

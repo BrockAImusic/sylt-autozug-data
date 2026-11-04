@@ -881,8 +881,108 @@ def merge_data_dates(old_doc, new_doc, today):
     return out
 
 
+# ------------------------------------------------- Plausibilität (vorher/nachher) -----
+
+RICHTUNG_TEXT = {"toIsland": "nach Sylt", "toMainland": "zum Festland"}
+BETREIBER_TEXT = {"db": "DB", "rdc": "RDC"}
+VERGLEICH_TAGE = 180
+
+
+def _saison_am(doc, op, tag):
+    """Saison wie TimetableEngine.season in den Apps: erst bestätigte Zeiträume
+    (sortierte Schlüssel), sonst Monatsregel. Zweiter Wert: bestätigt ja/nein."""
+    tabelle = dict(doc.get("seasons") or {})
+    tabelle.update((doc.get("operatorSeasons") or {}).get(op) or {})
+    for key in sorted(tabelle):
+        for r in tabelle[key].get("ranges", []):
+            if r["from"] <= tag <= r["to"]:
+                return key, True
+    monat = int(tag[5:7])
+    return ("summer" if 4 <= monat <= 10 else "winter"), False
+
+
+def abfahrten_am(doc, op, direction, tag):
+    """Verladeschluss-Zeiten eines Tages – dieselbe Regel wie die Apps."""
+    season, bestaetigt = _saison_am(doc, op, tag)
+    typ = app_tagestyp(tag)
+    zeiten = [s["close"] for s in doc.get("services", [])
+              if s["op"] == op and s["dir"] == direction and s["season"] == season
+              and (s["days"] == "all" or s["days"] == typ)
+              and tag not in (s.get("exceptDates") or [])]
+    return sorted(zeiten), bestaetigt
+
+
+def _zeitraeume_text(tage):
+    """['2026-11-02', '2026-11-03', '2026-11-05'] → '02.11.–03.11., 05.11.'"""
+    def kurz(t):
+        return f"{t[8:10]}.{t[5:7]}."
+    teile = []
+    for r in _zusammenhaengend(tage):
+        teile.append(kurz(r["from"]) if r["from"] == r["to"] else f"{kurz(r['from'])}–{kurz(r['to'])}")
+    return ", ".join(teile[:4]) + (" …" if len(teile) > 4 else "")
+
+
+def vergleiche_fahrplaene(alt, neu, heute):
+    """Vergleicht alten und neuen Fahrplan Tag für Tag (heute + 180 Tage).
+
+    Rückgabe (auffaellig, zusammenfassung): auffällig ist, was ein Mensch sehen muss,
+    bevor es an alle Nutzer geht – an einem bisher BESTÄTIGTEN Tag deutlich mehr oder
+    weniger Züge, mehr als die Hälfte der Zeiten anders, oder gar keine Züge mehr.
+    Anlass: Am 02.11.2026 verdoppelte sich die Zahl der DB-Züge über Nacht, und
+    niemand merkte es zwei Tage lang."""
+    auffaellig, zusammenfassung = [], []
+    start = datetime.date.fromisoformat(heute)
+    tage = [(start + datetime.timedelta(days=i)).isoformat() for i in range(VERGLEICH_TAGE)]
+    for op in ("db", "rdc"):
+        for direction in ("toIsland", "toMainland"):
+            name = f"{BETREIBER_TEXT[op]} {RICHTUNG_TEXT[direction]}"
+            gruppen = {}   # (art, text) -> [tage]
+            for tag in tage:
+                a, a_ok = abfahrten_am(alt, op, direction, tag)
+                n, n_ok = abfahrten_am(neu, op, direction, tag)
+                if a == n:
+                    continue
+                anders = len(set(a) ^ set(n))
+                if a_ok and a and not n:
+                    gruppen.setdefault(("rot", f"{name}: keine Züge mehr (vorher {len(a)})"), []).append(tag)
+                elif not a:
+                    # Vorher gar keine Zeiten (z. B. RDC-Winterplan erstmals erschienen): normal.
+                    gruppen.setdefault(("info", f"{name}: neuer Fahrplan ({len(n)} Züge am Tag)"), []).append(tag)
+                elif a_ok and abs(len(n) - len(a)) > max(2, len(a) // 4):
+                    gruppen.setdefault(("rot", f"{name}: {len(a)} → {len(n)} Züge am Tag"), []).append(tag)
+                elif a_ok and a and anders > len(a):
+                    gruppen.setdefault(("rot", f"{name}: mehr als die Hälfte der Zeiten anders ({len(a)} → {len(n)} Züge)"), []).append(tag)
+                else:
+                    neu_z = sorted(set(n) - set(a))
+                    weg_z = sorted(set(a) - set(n))
+                    teile = []
+                    if neu_z:
+                        teile.append("neu " + " ".join(neu_z[:6]) + (" …" if len(neu_z) > 6 else ""))
+                    if weg_z:
+                        teile.append("entfällt " + " ".join(weg_z[:6]) + (" …" if len(weg_z) > 6 else ""))
+                    if not a_ok and n_ok:
+                        teile = [f"Fahrplan neu bestätigt ({len(n)} Züge am Tag)"]
+                    elif not teile:
+                        teile = ["doppelte Zeiten bereinigt"]
+                    gruppen.setdefault(("info", f"{name}: " + ", ".join(teile)), []).append(tag)
+            for (art, text), t in gruppen.items():
+                zeile = f"{text} – {_zeitraeume_text(t)}"
+                (auffaellig if art == "rot" else zusammenfassung).append(zeile)
+    return auffaellig, zusammenfassung
+
+
+def schreibe_meldung(titel, zeilen, wichtig):
+    """Für die GitHub Action: Datei meldung.json → Push aufs iPhone (ntfy)."""
+    pfad = os.environ.get("MELDUNG_DATEI")
+    if not pfad:
+        return
+    with open(pfad, "w", encoding="utf-8") as f:
+        json.dump({"titel": titel, "text": "\n".join(zeilen)[:3500], "wichtig": wichtig}, f, ensure_ascii=False)
+
+
 def main():
     check_only = "--check" in sys.argv
+    freigeben = "--freigeben" in sys.argv
     here = os.path.dirname(os.path.abspath(__file__))
     out_path = os.path.join(here, "timetable.json")
 
@@ -893,6 +993,8 @@ def main():
         seasons = db_saisons(db_zeitraeume)
     except Exception as e:  # Netzwerk/Parsing – Fail-Safe
         print(f"FEHLER beim Abruf/Parsen: {e}", file=sys.stderr)
+        schreibe_meldung("Sylt-Fahrplan: Abruf fehlgeschlagen",
+                         [str(e)[:500], "Der bisherige Fahrplan bleibt online."], True)
         return 1
 
     errs = validate(services)
@@ -900,6 +1002,8 @@ def main():
         print("VALIDIERUNG FEHLGESCHLAGEN – bestehende Daten bleiben unverändert:", file=sys.stderr)
         for e in errs:
             print("  -", e, file=sys.stderr)
+        schreibe_meldung("Sylt-Fahrplan: Prüfung fehlgeschlagen",
+                         errs[:8] + ["Der bisherige Fahrplan bleibt online."], True)
         return 1
 
     today = datetime.date.today().isoformat()
@@ -923,6 +1027,8 @@ def main():
         print("VALIDIERUNG FEHLGESCHLAGEN – Fahrten doppelt, bestehende Daten bleiben unverändert:", file=sys.stderr)
         for e in doppelt:
             print("  -", e, file=sys.stderr)
+        schreibe_meldung("Sylt-Fahrplan: Züge doppelt – nicht veröffentlicht",
+                         doppelt[:8] + ["Der bisherige Fahrplan bleibt online."], True)
         return 1
     for season, dto in sorted(seasons.items()):
         print(f"  {season}: " + ", ".join(f"{r['from']}–{r['to']}" for r in dto["ranges"]))
@@ -935,6 +1041,14 @@ def main():
     for op, d in sorted(data_dates.items()):
         print(f"  Datenstand {op}: {d}")
 
+    auffaellig, zusammenfassung = [], []
+    if changed and old_doc is not None:
+        auffaellig, zusammenfassung = vergleiche_fahrplaene(old_doc, new_doc, today)
+        for z in auffaellig:
+            print("  AUFFÄLLIG:", z)
+        for z in zusammenfassung:
+            print("  geändert:", z)
+
     if check_only:
         if changed:
             print("(--check) Es gäbe eine Änderung.")
@@ -944,10 +1058,19 @@ def main():
         print("Keine Änderung – Datei bleibt wie sie ist.")
         return 0
 
+    if auffaellig and not freigeben:
+        print("ZURÜCKGEHALTEN – auffällige Änderung, ein Mensch muss draufschauen. "
+              "Nach Prüfung: Lauf mit --freigeben (Action: freigeben = ja).", file=sys.stderr)
+        schreibe_meldung("Sylt-Fahrplan zurückgehalten – bitte prüfen",
+                         auffaellig[:8] + ["Der bisherige Fahrplan bleibt online, bis jemand freigibt."], True)
+        return 2
+
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(new_doc, f, ensure_ascii=False, indent=2)
         f.write("\n")
     print(f"Aktualisiert: {out_path} (dataVersion {today})")
+    zeilen = (["Freigegeben trotz Auffälligkeit:"] + auffaellig if auffaellig else []) + zusammenfassung
+    schreibe_meldung("Sylt-Fahrplan aktualisiert", zeilen or ["Nur Angaben außerhalb der Fahrzeiten geändert."], False)
     return 0
 
 
