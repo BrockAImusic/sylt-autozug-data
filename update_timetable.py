@@ -193,17 +193,127 @@ def parse_db_page(page_html):
     return out
 
 
+PLAN_KOPF_RE = re.compile(
+    r"(?:Sommer|Winter)fahrplan\s+vom\s+(\d{1,2})\.(\d{1,2})\.(\d{4})\s+bis\s+(\d{1,2})\.(\d{1,2})\.(\d{4})", re.I)
+
+
+def parse_db_plaene(page_html):
+    """Teilt eine DB-Saisonseite in ihre Teilpläne auf.
+
+    Seit November 2026 stehen auf der Winterseite ZWEI Pläne untereinander
+    („vom 02.11.2026 bis 12.12.2026“ und „vom 13.12.2026 bis 12.03.2027“). Früher
+    landeten beide in einem Topf: die App zeigte doppelt so viele Züge, gleiche
+    Zeiten standen zweimal da – und Android stürzte an den doppelten Einträgen ab.
+    Ohne Überschrift mit Datum: ein Plan ohne Zeitraum (altes Verhalten)."""
+    roh_koepfe = list(PLAN_KOPF_RE.finditer(page_html))
+    if not roh_koepfe:
+        # Überschrift durch HTML-Tags zerteilt? Dann lieber abbrechen als zusammenwerfen.
+        if PLAN_KOPF_RE.search(strip_tags(page_html)):
+            raise RuntimeError("DB: Planüberschrift nur im Text gefunden, nicht im HTML – Seite prüfen")
+        return [{"von": None, "bis": None, "fahrten": parse_db_page(page_html)}]
+    plaene = []
+    for i, m in enumerate(roh_koepfe):
+        ende = roh_koepfe[i + 1].start() if i + 1 < len(roh_koepfe) else len(page_html)
+        d1, m1, y1, d2, m2, y2 = (int(x) for x in m.groups())
+        von = datetime.date(y1, m1, d1).isoformat()
+        bis = datetime.date(y2, m2, d2).isoformat()
+        if von > bis:
+            raise RuntimeError(f"DB: Planzeitraum verkehrt herum: {m.group(0)}")
+        fahrten = parse_db_page(page_html[m.start():ende])
+        if not fahrten["toIsland"] and not fahrten["toMainland"]:
+            continue
+        plaene.append({"von": von, "bis": bis, "fahrten": fahrten})
+    for a, b in zip(plaene, plaene[1:]):
+        if b["von"] <= a["bis"]:
+            raise RuntimeError(f"DB: Teilpläne {a['von']}–{a['bis']} und {b['von']}–{b['bis']} überlappen")
+    return plaene
+
+
+def _zusammenhaengend(tage):
+    tage = sorted(tage)
+    ranges = [{"from": tage[0], "to": tage[0]}]
+    for t in tage[1:]:
+        if datetime.date.fromisoformat(t) - datetime.date.fromisoformat(ranges[-1]["to"]) == datetime.timedelta(days=1):
+            ranges[-1]["to"] = t
+        else:
+            ranges.append({"from": t, "to": t})
+    return ranges
+
+
+def db_saison_zusammenfuehren(season, plaene):
+    """Mehrere datierte Teilpläne einer Saison → eine Fahrtenliste ohne Doppel.
+
+    Eine Fahrt, die in allen Plänen gleich ist, steht einmal da. Gibt es sie nur in
+    einem Plan, bekommt sie die Tage der anderen Pläne als exceptDates – das
+    verstehen alle App-Versionen (iOS seit 18.07., Android seit der ersten Fassung)."""
+    tage = sorted({t for p in plaene for t in _tage(p["von"], p["bis"])})
+    faehrt = {}
+    for p in plaene:
+        plan_tage = _tage(p["von"], p["bis"])
+        for direction in ("toIsland", "toMainland"):
+            for e in p["fahrten"][direction]:
+                key = (direction, e["close"], e["arr"], tuple(e["flags"]))
+                gilt = {t for t in plan_tage if e["days"] == "all" or app_tagestyp(t) == e["days"]}
+                faehrt.setdefault(key, set()).update(gilt)
+    services = []
+    for (direction, close, arr, flags), an in sorted(faehrt.items()):
+        if not an:
+            continue
+        beste = None
+        for days in ("all", "weekday", "weekend"):
+            basis = {t for t in tage if days == "all" or app_tagestyp(t) == days}
+            if an <= basis and (beste is None or len(basis - an) < len(beste[1])):
+                beste = (days, sorted(basis - an))
+        days, aus = beste
+        eintrag = {"op": "db", "dir": direction, "season": season, "close": close, "arr": arr,
+                   "days": days, "flags": list(flags), "arrExact": True}
+        if aus:
+            eintrag["exceptDates"] = aus
+        nachgerechnet = {t for t in tage if (days == "all" or app_tagestyp(t) == days) and t not in aus}
+        if nachgerechnet != an:
+            raise RuntimeError(f"DB: Darstellung von {direction} {close} stimmt nicht")
+        services.append(eintrag)
+    return services, _zusammenhaengend(tage)
+
+
 def db_services(index_html):
+    """DB-Fahrten plus die Zeiträume, die die Seiten selbst nennen ({season: ranges})."""
     pages = discover_db_pages(index_html)
     if "summer" not in pages or "winter" not in pages:
         raise ValueError(f"DB-Saisonseiten nicht gefunden: {pages}")
-    services = []
+    services, zeitraeume = [], {}
     for season, url in (("summer", pages["summer"]), ("winter", pages["winter"])):
-        parsed = parse_db_page(fetch(url))
-        for direction in ("toIsland", "toMainland"):
-            for e in parsed[direction]:
-                services.append({"op": "db", "dir": direction, "season": season, **e})
-    return services
+        plaene = parse_db_plaene(fetch(url))
+        if len(plaene) == 1:
+            p = plaene[0]
+            for direction in ("toIsland", "toMainland"):
+                for e in p["fahrten"][direction]:
+                    services.append({"op": "db", "dir": direction, "season": season, **e})
+            if p["von"]:
+                zeitraeume[season] = [{"from": p["von"], "to": p["bis"]}]
+        else:
+            s, ranges = db_saison_zusammenfuehren(season, plaene)
+            services += s
+            zeitraeume[season] = ranges
+    return services, zeitraeume
+
+
+def db_saisons(zeitraeume):
+    """Feste Saison-Zeiträume (SEASONS) um die von der DB genannten ergänzen.
+
+    Ältere, schon vergangene Zeiträume bleiben stehen; alles, was sich mit einem
+    neu genannten Zeitraum überschneidet oder danach liegt, wird durch ihn ersetzt."""
+    out = json.loads(json.dumps(SEASONS))
+    for season, neu in zeitraeume.items():
+        start = min(r["from"] for r in neu)
+        alt = [r for r in out[season]["ranges"] if r["to"] < start]
+        out[season]["ranges"] = alt + neu
+    # Sommer und Winter dürfen sich nie überschneiden.
+    alle = sorted((r["from"], r["to"], s) for s, dto in out.items() for r in dto["ranges"])
+    for (f1, t1, s1), (f2, t2, s2) in zip(alle, alle[1:]):
+        if f2 <= t1:
+            raise RuntimeError(f"DB: Saison {s1} {f1}–{t1} überschneidet {s2} {f2}–{t2}")
+    return out
 
 
 # --------------------------------------------------------------- RDC -------
@@ -672,7 +782,33 @@ def validate(services):
     return errs
 
 
-def build_doc(services, data_version, data_dates, operator_seasons):
+def doppelte_fahrten(doc):
+    """Fährt ein Zug (Betreiber, Richtung, Verladeschluss) an einem Tag zweimal?
+
+    Gleiche Zeit doppelt heißt in den Apps zwei gleiche Zeilen – Android bricht
+    dann beim Zeichnen der Liste ab (gleicher Listenschlüssel). Gerechnet wird
+    genau wie in den Apps: Saison-Zeiträume je Betreiber, Tagestyp, exceptDates."""
+    fehler = []
+    belegt = {}
+    for s in doc["services"]:
+        tabelle = dict(doc["seasons"])
+        tabelle.update((doc.get("operatorSeasons") or {}).get(s["op"]) or {})
+        ranges = (tabelle.get(s["season"]) or {}).get("ranges", [])
+        aus = set(s.get("exceptDates") or [])
+        key = (s["op"], s["dir"], s["close"])
+        for r in ranges:
+            for t in _tage(r["from"], r["to"]):
+                if t in aus or (s["days"] != "all" and app_tagestyp(t) != s["days"]):
+                    continue
+                # Die Apps nehmen je Tag nur die Saison, in deren Zeitraum der Tag liegt.
+                if (key, t) in belegt:
+                    fehler.append(f"doppelt: {s['op']} {s['dir']} {s['close']} am {t}")
+                    break
+                belegt[(key, t)] = True
+    return fehler[:10]
+
+
+def build_doc(services, data_version, data_dates, operator_seasons, seasons=None):
     services = sorted(services, key=lambda s: (s["op"], s["dir"], s["season"], s["close"]))
     return {
         "schemaVersion": 1,
@@ -680,7 +816,7 @@ def build_doc(services, data_version, data_dates, operator_seasons):
         "generatedAt": data_version + "T06:00:00Z",
         "note": "Alle Angaben ohne Gewähr. Zeiten = Verladeschluss (Check-in). "
                 "Unabhängige App, keine offizielle App von DB oder RDC.",
-        "seasons": SEASONS,
+        "seasons": seasons or SEASONS,
         "operatorSeasons": operator_seasons,
         "holidays": HOLIDAYS,
         "operators": OPERATORS,
@@ -752,7 +888,9 @@ def main():
 
     try:
         rdc, rdc_seasons = rdc_services(fetch(RDC_URL))
-        services = db_services(fetch(DB_INDEX)) + rdc
+        db, db_zeitraeume = db_services(fetch(DB_INDEX))
+        services = db + rdc
+        seasons = db_saisons(db_zeitraeume)
     except Exception as e:  # Netzwerk/Parsing – Fail-Safe
         print(f"FEHLER beim Abruf/Parsen: {e}", file=sys.stderr)
         return 1
@@ -777,9 +915,17 @@ def main():
     operator_seasons = {"rdc": rdc_seasons}
 
     # Erst ohne Daten bauen, dann je Betreiber gegen den alten Stand vergleichen.
-    probe = build_doc(services, today, {}, operator_seasons)
+    probe = build_doc(services, today, {}, operator_seasons, seasons)
     data_dates = merge_data_dates(old_doc, probe, today)
-    new_doc = build_doc(services, today, data_dates, operator_seasons)
+    new_doc = build_doc(services, today, data_dates, operator_seasons, seasons)
+    doppelt = doppelte_fahrten(new_doc)
+    if doppelt:
+        print("VALIDIERUNG FEHLGESCHLAGEN – Fahrten doppelt, bestehende Daten bleiben unverändert:", file=sys.stderr)
+        for e in doppelt:
+            print("  -", e, file=sys.stderr)
+        return 1
+    for season, dto in sorted(seasons.items()):
+        print(f"  {season}: " + ", ".join(f"{r['from']}–{r['to']}" for r in dto["ranges"]))
     for season, dto in sorted(rdc_seasons.items()):
         print(f"  RDC {season}: {dto['ranges'][0]['from']} bis {dto['ranges'][-1]['to']}")
 
