@@ -52,7 +52,10 @@ SEASONS = {
 # "winter" in den Daten – vorher wuerde er faelschlich als Sommer eingelesen.
 HOLIDAYS = ["2026-01-01", "2026-04-03", "2026-04-06", "2026-05-01", "2026-05-14",
             "2026-05-25", "2026-10-03", "2026-10-31", "2026-12-25", "2026-12-26",
-            "2027-01-01"]
+            # 2027 (Schleswig-Holstein; Ostern 28.03.2027) – vor Karfreitag 26.03.2027 nötig
+            "2027-01-01", "2027-03-26", "2027-03-29", "2027-05-01", "2027-05-06",
+            "2027-05-17", "2027-10-03", "2027-10-31", "2027-12-25", "2027-12-26",
+            "2028-01-01"]
 OPERATORS = {
     "db": {
         "name": "DB Sylt Shuttle", "shortName": "Roter Autozug", "color": "#EC0016",
